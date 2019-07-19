@@ -1,0 +1,17 @@
+body {
+  touch-action: none;
+}
+
+.filter {
+  position:absolute;
+  top:0px;
+  left:0px;
+  background-color:black;
+  width:10px;
+  height:10px;
+}
+
+#fft {
+  width:512px;
+  height:200px;
+}

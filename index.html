@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Freealise | Additive</title>
+        <link rel="stylesheet" href="main.css" />
+        <link rel="shortcut icon" href="favicon16.ico">
+        <link rel="icon" type="image/png" sizes="48x48" href="favicon48.png">
+        <link rel="apple-touch-icon" sizes="48x48" href="favicon48.png">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+    <body oncontextmenu="return false;">
+        <div id="keyboard">
+          <div class='key' id='0'></div>
+          <div class='key' id='1'></div>
+          <div class='key' id='2'></div>
+          <div class='key' id='3'></div>
+          <div class='key' id='4'></div>
+          <div class='key' id='5'></div>
+          <div class='key' id='6'></div>
+          <div class='key' id='7'></div>
+          <div class='key' id='8'></div>
+          <div class='key' id='9'></div>
+          <div class='key' id='10'></div>
+          <div class='key' id='11'></div>
+          <div class='key' id='12'></div>
+          <div class='key' id='13'></div>
+          <div class='key' id='14'></div>
+          <div class='key' id='15'></div>
+          <div class='key' id='16'></div>
+          <div class='key' id='17'></div>
+          <div class='key' id='18'></div>
+          <div class='key' id='19'></div>
+          <div class='key' id='20'></div>
+          <div class='key' id='21'></div>
+          <div class='key' id='22'></div>
+          <div class='key' id='23'></div>
+          <div class='key' id='24'></div>
+        </div>
+        <div id="oscilloscope"></div>
+        <svg id="intervals"></svg>
+        <div id="controls">
+          <div id="voicePopup">
+            <button onclick="onoffSwitch()" id="onoffButton"><i class="material-icons" id="onoff">music_off</i></button>
+            <button onclick="recSwitch()" id="recButton"><i class="material-icons" id="rec">fiber_manual_record</i></button>
+            <audio controls id="rec_audio"></audio>
+            <!--<button id="uploadRec" onclick="display_upload_rec()"><i class="material-icons">backup</i></button>
+            <input type="file" id="upload_rec" onchange="uploadRec()" accept="text/csv,.csv">-->
+            <span id="scale">
+              <button id="scale_keys" onclick="modeChange('keys')" class="selected"><i class="material-icons">straighten</i></button>
+              <button id="scale_strings" onclick="modeChange('strings')"><i class="material-icons">line_weight</i></button>
+            </span>
+            <button id="param" onclick="display_param()"><i class="material-icons">tune</i></button>
+            <div id="param_popup">
+              <i class="material-icons">tune</i><br/>
+              <div>Sample rate
+              <select id="sample_rate" onchange="changeSampleRate(this.value)">
+                <option value="8000" selected="true">8000</option>
+                <option value="11025">11025</option>
+                <option value="16000">16000</option>
+                <option value="22050">22050</option>
+                <option value="44100">44100</option>
+                <option value="48000">48000</option>
+              </select>
+              </div>
+              <p>MIDI input device
+              <select id="midiIn" onchange="selectMIDIIn()"></select>
+              </p>
+              Show harmonic intervals <input type="checkbox" id="show_intervals" onchange="show_intervals()">
+              <p>Random variation
+              <input type="text" id="random" size="2" value="0.125" onchange="document.getElementById('random_range').value=this.value;"><br/>
+              <input type="range" id="random_range" min="0.0" max="1.0" value="0.125" step="0.001" class="slider" onchange="document.getElementById('random').value=this.value;"><br/>
+              Number of unique notes
+              <input type="text" id="notes" size="2" value="30">
+              </p>
+            </div>
+            <input type="text" id="filename" value="Untitled">
+            <button id="download" onclick="download()"><i class="material-icons">get_app</i></button>
+            <button id="upload" onclick="display_upload()"><i class="material-icons">publish</i></button>
+            <div id="upload_popup">
+              <i class="material-icons" style="float:left">publish</i><input type="file" id="upload_voice" onchange="uploadVoice()" accept="text/csv,.csv">
+            </div>
+            <select id="voice_number" onchange="switchVoice(this.selectedIndex)">
+              <option value="0" selected="true">0</option>
+            </select>
+            <button id="voice_add" onclick="addVoice()"><i class="material-icons">queue</i></button>
+            <button id="help" onclick="display_help()"><i class="material-icons">live_help</i></button>
+            <button id="remove" onclick="controlPoint(false)"><i class="material-icons">remove_circle_outline</i></button>
+            <button id="add" onclick="controlPoint(true)"><i class="material-icons">add_circle_outline</i></button>
+            <!--<textarea id="spectrumVol" onchange="initOscillator();init();">1/(j+1)-Math.sin(i/frameCount*pi)/(j+1)</textarea>
+            <textarea id="spectrumFreq" onchange="initOscillator();init();">Math.sin(i/200)/1000/(j+1)+1</textarea>-->
+            <button id="rew" onclick="timeScroll(false)"><i class="material-icons">arrow_drop_up</i></button>
+            <button id="fwd" onclick="timeScroll(true)"><i class="material-icons">arrow_drop_down</i></button>
+            <button id="timerButton" onclick="timerSwitch()"><i class="material-icons" id="timer">timer</i></button>
+            <div id="h_select"><i class="material-icons">arrow_drop_down</i></div>
+            <div id="gradient">
+                <div id="time"><div id="timeSlider"><i class="material-icons">arrow_right_alt</i></div></div>
+                <div id='g0'></div>
+                <div id='g1'></div>
+                <div id='g2'></div>
+                <div id='g3'></div>
+                <div id='g4'></div>
+                <div id='g5'></div>
+                <div id='g6'></div>
+                <div id='g7'></div>
+                <div id='g8'></div>
+                <div id='g9'></div>
+                <div id='g10'></div>
+                <div id='g11'></div>
+                <div id='g12'></div>
+                <div id='g13'></div>
+                <div id='g14'></div>
+                <div id='g15'></div>
+                <div id='g16'></div>
+                <div id='g17'></div>
+                <div id='g18'></div>
+                <div id='g19'></div>
+                <div id='g20'></div>
+                <div id='g21'></div>
+                <div id='g22'></div>
+                <div id='g23'></div>
+                <div id='g24'></div>
+            </div>
+            <div id="spectrum">
+                <div id="numbers"></div>
+                <div class='harmonic' id='h0'></div>
+                <div class='harmonic' id='h1'></div>
+                <div class='harmonic' id='h2'></div>
+                <div class='harmonic' id='h3'></div>
+                <div class='harmonic' id='h4'></div>
+                <div class='harmonic' id='h5'></div>
+                <div class='harmonic' id='h6'></div>
+                <div class='harmonic' id='h7'></div>
+                <div class='harmonic' id='h8'></div>
+                <div class='harmonic' id='h9'></div>
+                <div class='harmonic' id='h10'></div>
+                <div class='harmonic' id='h11'></div>
+                <div class='harmonic' id='h12'></div>
+                <div class='harmonic' id='h13'></div>
+                <div class='harmonic' id='h14'></div>
+                <div class='harmonic' id='h15'></div>
+                <div class='harmonic' id='h16'></div>
+                <div class='harmonic' id='h17'></div>
+                <div class='harmonic' id='h18'></div>
+                <div class='harmonic' id='h19'></div>
+                <div class='harmonic' id='h20'></div>
+                <div class='harmonic' id='h21'></div>
+                <div class='harmonic' id='h22'></div>
+                <div class='harmonic' id='h23'></div>
+                <div class='harmonic' id='h24'></div>
+            </div>
+            <pre style="display:none;">
+              <div id="spectrumValues"></div>
+              <textarea id="spectrumText" onkeyup="spectrumChange()"></textarea>
+              <button onclick="initOscillator();init();" id="spectrumButton">Apply</button>
+            </pre>
+          </div>
+          <div id="scroll">
+            <button id="scroll_left" onclick="window.scrollBy(-55, 0)"><i class="material-icons">arrow_left</i></button><button id="scroll_right" onclick="window.scrollBy(55, 0)"><i class="material-icons">arrow_right</i></button>
+            <button id="scroll_top" onclick="window.scrollBy(0, -50)"><i class="material-icons">arrow_drop_up</i></button><button id="scroll_bottom" onclick="window.scrollBy(0, 50)"><i class="material-icons">arrow_drop_down</i></button>
+          </div>
+          <button onclick="voiceControl()" id="voiceButton"><i class="material-icons">graphic_eq</i></button>
+          <div id="help_popup">
+            <div id="help_text"></div>
+            <div id="help_nav">
+              <button onclick="help_id--;showHelp(help_id);"><i class="material-icons">chevron_left</i></button>
+              <button onclick="help_id++;showHelp(help_id);"><i class="material-icons">chevron_right</i></button>
+              <i class="material-icons">live_help</i>
+            </div>
+          </div>
+        </div>
+        <div id="notice">
+          The app is optimized for touchscreen devices but supports MIDI, as well as standard mouse and keyboard.
+          <div style="text-align:center;">
+            <i class="material-icons">touch_app</i> <i class="material-icons">straighten</i> <i class="material-icons">mouse</i> <i class="material-icons">keyboard</i>
+          </div>
+          It gives better experience in <a href="https://www.google.com/chrome/" target="_blank">Chrome</a>, <a href="https://www.firefox.com/" target="_blank">Firefox</a> and <a href="https://www.opera.com/" target="_blank">Opera</a> (not Opera Mini), but should also work in Safari and Edge - if it does not, please update your browser.
+          <div style="text-align:center;">
+            <img src="chrome.svg"/> <img src="firefox.svg"/> <img src="opera.svg"/>
+          </div>
+          <button id="close_notice" onclick="this.parentNode.style.display='none';"><i class="material-icons">close</i></button>
+        </div>
+        <script src="help.js"></script>
+        <script src="oscilloscope.js"></script>
+        <script src="synth.js"></script>
+        <script src="midi.js"></script>
+    </body>
+</html>
