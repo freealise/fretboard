@@ -8,3 +8,9 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 # TODO for beta:
 MIDI out (midi_out.html) <br/>
 Touch radius / angle -> volume / pan (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
+<br/>
+
+Play the microtonal keyboard.<br />
+Design the sound with harmonics and noise.<br />
+<br />
+Details about supported devices, benefits, interface and settings
