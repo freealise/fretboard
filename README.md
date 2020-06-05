@@ -14,3 +14,7 @@ Play the microtonal keyboard.<br />
 Design the sound with harmonics and noise.<br />
 <br />
 Details about supported devices, benefits, interface and settings
+
+Download the spectral synthesizer<br />
+An app with an intuitive interface without the overcomplication.<br />
+[google play / app store]
