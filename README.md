@@ -1,5 +1,6 @@
 # Freealise synth
-Spectral additive synthesizer with microtonal keyboard optimized for touchscreen. 
+Spectral additive synthesizer optimized for touchscreen.
+This app allows you to play the microtonal screen keyboard and design the sound.
 Written in Javascript using Web Audio API, works in most browsers.
 
 # Bugs
