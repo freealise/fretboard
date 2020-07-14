@@ -9,7 +9,7 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 # TODO for beta:
 MIDI out (midi_out.html) <br/>
 Touch radius / angle -> volume / pan (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
-Use the Sunvox player engine (WASM) / Pixilang
+Use the Sunvox player engine (WASM) (16 finely detuned channels, one instrument at a time) + touch sensitivity (both coordinates)
 <br/>
 
 Play the microtonal keyboard.<br />
