@@ -9,9 +9,10 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 # TODO for beta:
 MIDI out (midi_out.html) <br/>
 Touch radius / angle -> volume / pan (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
-Use the Sunvox player engine (WASM) (16 finely detuned channels, one instrument at a time) + touch sensitivity
-(both coordinates + velocity + rotationAngle)
-<br/>
+Use the Sunvox player engine (WASM) (16 finely detuned channels, one instrument at a time) + touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
+change synthesizing mode to eval(), so parameters can be changed in realtime<br/>
+noise and detune<br/>
+<hr/>
 
 Play the microtonal keyboard.<br />
 Design the sound with harmonics and noise.<br />
