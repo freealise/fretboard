@@ -13,4 +13,4 @@ Use the Sunvox player engine (WASM) (16 finely detuned channels for microtonalit
 change parameters in realtime<br/>
 noise and detune of harmonics (SpectraVoice)<br/><br/>
 
-Update and merge when VirtualANS noise generator is improved (clone for browser within phonetic app?)
+Update and merge when VirtualANS noise generator is improved (clone for browser with linear scale in phonetic app?)
