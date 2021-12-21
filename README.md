@@ -7,7 +7,7 @@ Written in Javascript using Web Audio API, works in most browsers.
 After the same key is pressed with two fingers, its sound mutes shortly after the start of note.
 
 # TODO for beta:
-MIDI out (midi_out.html) <br/>
+MIDI out for VirtualANS - phonetic linear scale with varying number of simultaneous notes per key (midi_out.html) <br/>
 Touch radius / angle -> volume / pan (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 Use the Sunvox player engine (WASM) (16 finely detuned channels for microtonality, one instrument at a time) + touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
 change parameters in realtime<br/>
