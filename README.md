@@ -10,6 +10,6 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 MIDI out for DAWs (16 channels for microtonality) - phonetic linear scale with varying number of simultaneous notes per key (midi_out.html) <br/>
 Touch radius / angle -> volume / pan (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
-noise and detune of harmonics (spectral generator from phonetic app - https://warmplace.ru/forum/viewtopic.php?p=20334#p20334)<br/><br/>
+noise and detune of harmonics (spectral generator from phonetic app, keep voice capabilities - https://warmplace.ru/forum/viewtopic.php?p=20334#p20334)<br/><br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
