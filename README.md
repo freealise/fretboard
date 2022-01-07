@@ -8,7 +8,7 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 
 # TODO for beta:
 linear scale switch like with piano/string (emulate formants with varying number of simultaneous notes per key)<br/>
-MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
+sequencer, MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
 Touch radius / angle -> volume / pan or noise (?) of notes and harmonics (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
 noise and detune of harmonics (spectral generator from phonetic app, keep voice capabilities - https://warmplace.ru/forum/viewtopic.php?p=20334#p20334)<br/><br/>
