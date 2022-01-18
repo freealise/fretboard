@@ -12,5 +12,6 @@ microtonal sequencer, MIDI in/out to and from DAWs (16 channels for microtonalit
 Touch radius / angle -> volume / pan or noise (?) of notes and harmonics (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
 noise and detune of harmonics (spectral generator from phonetic app, keep voice capabilities - https://warmplace.ru/forum/viewtopic.php?p=20334#p20334)<br/><br/>
+chart actual voice formants of tts ?
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
