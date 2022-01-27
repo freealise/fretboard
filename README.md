@@ -1,6 +1,6 @@
 # Freealise synth
 Spectral synthesizer optimized for touchscreen.
-This app allows you to play the multitouch screen keyboard like a string instrument and control the sound.
+This app allows you to play the multitouch screen fretboard like tapping a string instrument and control the sound.
 Written in Javascript using Web Audio API, works in most browsers.
 
 # Bugs
