@@ -10,6 +10,7 @@ After the same key is pressed with two fingers, its sound mutes shortly after th
 MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
 Touch radius / angle -> volume / pan or noise (?) of notes and harmonics (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
-noise and detune of harmonics (spectrum controlled in realtime by noise filters, can emulate formants on linear scale - switch like with piano/string)<br/>
+noise and detune of harmonics (formants.html for noise generator)<br/>
+spectrum controlled in realtime by filters, can emulate formants on linear scale - switch like with piano/string<br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
