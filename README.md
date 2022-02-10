@@ -11,6 +11,5 @@ MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi
 Touch radius / angle -> volume / pan or noise (?) of notes and harmonics (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
 touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
 noise and detune of harmonics (specdraw as audio engine)<br/>
-spectrum controlled in realtime by filters (?), can emulate formants on linear scale - switch like with piano/string<br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
