@@ -5,6 +5,7 @@ Written in Javascript using Web Audio API, works in most browsers.
 
 # Bugs
 After the same key is pressed with two fingers, its sound mutes shortly after the start of note.
+Remake the interface based on https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth
 
 # TODO for beta:
 MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
