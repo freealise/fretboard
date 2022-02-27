@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Multi Touch ASCII Spectrogram Drawing</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'/>
+<!-- sound transformations from http://arss.sourceforge.net/code.shtml -->
+<!-- JS port of FFTW from https://github.com/j-funk/js-dsp-test/tree/master/fft/fftw -->
+<!-- save audio as wav https://www.russellgood.com/how-to-convert-audiobuffer-to-audio-file/ -->
+<!-- spectrogram from https://noisehack.com/build-music-visualizer-web-audio-api/ -->
+<style>
+  textarea {
+    cursor:crosshair;
+    user-select:none;
+    border:0;
+    margin:0;
+    padding:0;
+    font-size:8px;
+    line-height:1em;
+    letter-spacing:0;
+  }
+  body { margin: 0; padding: 0; user-select: none; touch-action: none; background-color: black; color: white; font-family: monospace; font-size: 14px; width: 100%; height: 90vh; }
+  li, label, input { display: inline-block; color: gray; }
+  input { opacity: 0; top: 6px; position: relative; height: 24px; width: 24px; margin: 0; padding: 0; border: 0; margin-left: -24px; }
+  button { color: white; background-color:transparent; border-width: 0; }
+  #toolbar { height: 2em; padding: 1em 0 1em 0; margin:0; list-style-type:none; white-space: nowrap; }
+  .material-icons { top: 6px; position: relative; }
+  #load_image, #save_audio { display:none; }
+  #ruler_log { position: absolute; left: 8px; width: 48px; border: 0; margin: 0; padding: 0; }
+  hr { position:absolute; left: 0; width: 4px; height: 1px; border: 0; margin: 0; padding: 0; }
+  span { position:absolute; left: 4px; border: 0; margin: 0; padding: 0; color: lightgray; font-size: 10px; margin-top: -0.5em;}
+  a { color:gray; text-decoration: none; font-weight: bold; }
+  #footer { position: absolute; top:0; left:40px; padding-top:1em; background-color:black; width:100%; height:2.5em; display:none; }
+  #ascii { line-height:1em; letter-spacing:0.3em; font-weight: bold; font-size: 1px; color: white; background: black; filter: brightness(750%) contrast(750%); border:0; width: 300vh; overflow: scroll; margin:0px; padding:0; white-space: pre; position: relative; left: 64px; }
+</style>
+</head>
+<body oncontextmenu="return false;">
+  
+<textarea id="txt" cols='1024' rows='32' onmousemove='addSymbol(event)' onmousedown='m=true;' onmouseup='m=false;' onmouseleave='m=false;' onkeydown='keyDn(event)' onkeyup='keyUp(event)'></textarea>
+
+<ul id="toolbar">
+  <li><a id="credits" href="javascript:showCredits();" title="Copyright"><i class='material-icons notranslate'>attribution</i></a></li>
+  <li><a href="javascript:document.getElementById('load_image').click();" title="Open"><i class='material-icons notranslate'>file_open</i></a><input id="load_image" type="file" onchange="loadImage();" /></li>
+  <li><a id="save_image" href="javascript:saveImage();" title="Save"><i class='material-icons notranslate'>save</i></a></li>
+  <li><i class='material-icons notranslate'>graphic_eq</i><input class="song-btn" title="Open audio" type="checkbox" onchange="songSwitch();toggleColor(this);" /><audio id="open_audio"></audio></li>
+	<li><a id="save_audio" href="" title="Save audio"><i class='material-icons notranslate'>audio_file</i></a></li>
+	<li><button id="play" type="button" title="Play" onclick="play()"><i class='material-icons notranslate'>play_arrow</i></button></li>
+  <li><i class='material-icons notranslate'>fiber_manual_record</i><input id="record" type="checkbox" onchange="record();toggleColor(this);" title="Record" /></li>
+  <li><select id="midiIn" onchange="selectMIDIIn()"></select></li>
+	<li><button id="clearCanvas" type="button" title="Fill"><i class='material-icons notranslate'>format_paint</i></button></li>
+	<li><button id="copy" type="button" title="Copy"><i class='material-icons notranslate'>file_copy</i></button></li>
+        <li id="chooseColor">--|---</li>
+        <li id="chooseSize">1</li>
+  <li><a class="button"><i class='material-icons notranslate'>gradient</i><input id="noise" title="Noise" type="checkbox" onchange="toggleColor(this);" /></a></li>
+	<li><i class='material-icons notranslate'>line_weight</i><input id="scale" type="checkbox" title="Formants" onchange="toggleColor(this);" /></li>
+</ul>
+
+<div id="ruler_log"></div>
+
+<div id="ascii"></div>
+
+<script src="FFTW.js"></script>
+<script src="midi.js"></script>
+<script>
+var hex = (
+  "䷀䷫䷌䷠䷉䷅䷘䷋" +
+  "䷈䷸䷤䷴䷼䷺䷩䷓" +
+  "䷍䷱䷝䷷䷥䷿䷔䷢" +
+  "䷙䷑䷕䷳䷨䷃䷚䷖" +
+  "䷪䷛䷰䷞䷹䷮䷐䷬" +
+  "䷄䷯䷾䷦䷻䷜䷂䷇" +
+  "䷡䷟䷶䷽䷵䷧䷲䷏" +
+  "䷊䷭䷣䷎䷒䷆䷗䷁"
+).split("");
+
+var phonemes =
+"䷀䷀䷀䷀䷀䷀䷀䷀䷀䷀䷀䷫ ䷡䷡䷁䷁䷟䷟䷁䷁ ䷀䷌ ䷀䷫䷫䷫䷀䷫ ䷁䷁ ䷁䷁䷡䷡䷌䷫" + "\n" +
+"䷫䷠䷌䷘䷉䷼䷈䷙䷍䷡䷪䷪ ䷀䷫䷀䷫䷼䷺䷗䷁ ䷋䷾ ䷠䷷䷿䷑䷽䷛ ䷡䷟ ䷗䷁䷀䷫䷾䷑";
+
+/*
+uuooaaeaeeii sztdszfv rh wmnnly cj pbtdkg
+: : : re : :   hhhh         g   hh
+*/
+
+var phonemes_ = phonemes.split("\n");
+for (var i=0; i<phonemes_.length; i++) {
+  phonemes_[i] = phonemes_[i].split("");
+}
+
+var dots = (
+"⠀⢀⠠⢠⠐⢐⠰⢰⠈⢈⠨⢨⠘⢘⠸⢸" +
+"⡀⣀⡠⣠⡐⣐⡰⣰⡈⣈⡨⣨⡘⣘⡸⣸" +
+"⠄⢄⠤⢤⠔⢔⠴⢴⠌⢌⠬⢬⠜⢜⠼⢼" +
+"⡄⣄⡤⣤⡔⣔⡴⣴⡌⣌⡬⣬⡜⣜⡼⣼" +
+"⠂⢂⠢⢢⠒⢒⠲⢲⠊⢊⠪⢪⠚⢚⠺⢺" +
+"⡂⣂⡢⣢⡒⣒⡲⣲⡊⣊⡪⣪⡚⣚⡺⣺" +
+"⠆⢆⠦⢦⠖⢖⠶⢶⠎⢎⠮⢮⠞⢞⠾⢾" +
+"⡆⣆⡦⣦⡖⣖⡶⣶⡎⣎⡮⣮⡞⣞⡾⣾" +
+"⠁⢁⠡⢡⠑⢑⠱⢱⠉⢉⠩⢩⠙⢙⠹⢹" +
+"⡁⣁⡡⣡⡑⣑⡱⣱⡉⣉⡩⣩⡙⣙⡹⣹" +
+"⠅⢅⠥⢥⠕⢕⠵⢵⠍⢍⠭⢭⠝⢝⠽⢽" +
+"⡅⣅⡥⣥⡕⣕⡵⣵⡍⣍⡭⣭⡝⣝⡽⣽" +
+"⠃⢃⠣⢣⠓⢓⠳⢳⠋⢋⠫⢫⠛⢛⠻⢻" +
+"⡃⣃⡣⣣⡓⣓⡳⣳⡋⣋⡫⣫⡛⣛⡻⣻" +
+"⠇⢇⠧⢧⠗⢗⠷⢷⠏⢏⠯⢯⠟⢟⠿⢿" +
+"⡇⣇⡧⣧⡗⣗⡷⣷⡏⣏⡯⣯⡟⣟⡿⣿"
+).split("");
+
+var bn = {};
+for (var i = 0; i<256; i++) {
+  bn[dots[i]] = i.toString(2).replace(/0/g, "").length;
+}
+dots.sort(function(a, b){return bn[a] - bn[b]});
+
+var kbrd = {
+  '`': 0,
+  '1': 1,
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  '6': 6,
+  '7': 7,
+  '8': 8,
+  '9': 9,
+  '0': 10,
+  '-': 11,
+  '=': 12,
+  'q': 13,
+  'w': 14,
+  'e': 15,
+  'r': 16,
+  't': 17,
+  'y': 18,
+  'u': 19,
+  'i': 20,
+  'o': 21,
+  'p': 22,
+  '[': 23,
+  ']': 24,
+  'a': 25,
+  's': 26,
+  'd': 27,
+  'f': 28,
+  'g': 29,
+  'h': 30,
+  'j': 31,
+  'k': 32,
+  'l': 33,
+  ';': 34,
+  '\'': 35,
+  'Enter': 36,
+  'z': 37,
+  'x': 38,
+  'c': 39,
+  'v': 40,
+  'b': 41,
+  'n': 42,
+  'm': 43,
+  ',': 44,
+  '.': 45,
+  '/': 46,
+  'Shift': 47,
+  '\\': 48,
+}
+var keysPressed = new Array(49);
+keysPressed.fill(0);
+
+var txt = document.getElementById("txt");
+var m = false;
+
+for (var i=0; i<32; i++) {
+  for (var j=0; j<1024; j++) {
+    document.getElementById("txt").value += " ";
+  }
+  document.getElementById("txt").value += "\n";
+}
+
+function addSymbol(e) {
+  if (m === true) {
+    var c = Math.round(e.pageY/8-1)*1025+Math.round(e.pageX/5);
+    var t = txt.value;
+    t = t.substr(0,c-1) + "#" + t.substr(c);
+    txt.value = t;
+    txt.focus();
+  }
+}
+
+var context = null;
+
+var fftSize = 4096;
+var canvasHeight = fftSize/2;
+var canvasWidth = document.body.clientWidth;
+var ascii = document.getElementById('ascii');
+var ruler_log = document.getElementById("ruler_log");
+ascii.style.height = canvasHeight+"px";
+
+var notes = [];
+var rec = null;
+var timer = null;
+var timerInterval = 32; //ms
+var formantWidth = 128; //Hz
+
+function loadImage() {
+  var fl = document.getElementById("load_image").files[0];
+  if (fl) {
+    var oFReader = new FileReader();
+    oFReader.readAsDataURL(fl);
+    oFReader.onload = function (oFREvent) {
+      var initialImage = new Image();
+  	  initialImage.src = oFREvent.target.result;
+  	  initialImage.onload = function() {
+  	    //txt.value
+  	  }
+    };
+  }
+}
+
+function saveImage() {
+  var image = c.toDataURL("image/png").replace("image/png", "image/octet-stream"); //Convert image to 'octet-stream' (Just a download, really)
+  var anchor = document.getElementById('save_image');
+  anchor.download = 'specdraw.png';
+  anchor.href = image;
+  anchor.click();
+  anchor.href = "javascript:saveImage();"
+}
+
+function saveAudio(abuffer, total_samples) {
+	// get duration and sample rate
+	var duration = abuffer.duration,
+		rate = abuffer.sampleRate,
+		offset = 0;
+
+	var new_file = URL.createObjectURL(bufferToWave(abuffer, total_samples));
+
+	var anchor = document.getElementById("save_audio");
+	anchor.download = "specdraw.wav";
+	anchor.href = new_file;
+  anchor.style.display = "block";
+}
+
+function keyDn(e) {
+		if (kbrd[e.key] >= 0 && keysPressed[kbrd[e.key]] == 0) {
+		  e.preventDefault();
+		  keysPressed[kbrd[e.key]] = 255;
+		}
+}
+	
+function keyUp(e) {
+		if (kbrd[e.key] >= 0 && keysPressed[kbrd[e.key]] == 255) {
+		  e.preventDefault();
+		  keysPressed[kbrd[e.key]] = 0;
+		}
+}
+
+if (!window.AudioContext) {
+	if (!window.webkitAudioContext) {
+		alert("Your browser does not support any AudioContext and cannot play back audio.");
+	}
+	window.AudioContext = window.webkitAudioContext;
+}
+
+function play() {
+	if (!context)
+		context = new AudioContext({latencyHint:"interactive",sampleRate: samplerate});
+
+	document.getElementById('play').disabled = true;
+	document.getElementById('record').disabled = true;
+
+	var pixels = [];
+	for (var y=0; y<canvasHeight; y++) {
+		pixels[y] = [];
+		for (var x=0; x<canvasWidth; x++) {
+			pixels[y][x] = dots.indexOf(ascii_data[y][x]) / 255.0;
+		}
+	}
+	var audioBuffer = synt_sine(pixels);
+
+	// Create a source node from the buffer
+	var source = context.createBufferSource();
+	// Fill in source.buffer from audioBuffer
+	var soundBuffer = context.createBuffer(1, audioBuffer.length, samplerate);
+	var buffer = soundBuffer.getChannelData(0);
+	for(var i=0; i<audioBuffer.length; i++)
+		buffer[i] = audioBuffer[i];
+	source.buffer = soundBuffer;
+	// Connect to the final output node (the speakers)
+	source.connect(context.destination);
+	// Play immediately
+	source.start(0);
+	source.onended = function(){
+	  document.getElementById('play').disabled = false;
+	  document.getElementById('record').disabled = false;
+	  saveAudio(soundBuffer, audioBuffer.length);
+	};
+}
+
+	function record() {
+		timer = 0;
+	  if (!rec) {
+	    ascii.style.transform = "rotateZ(90deg) rotateX(180deg)";
+      ascii.style.transformOrigin = "0 0";
+      ascii.innerText = "";
+      ascii_data = [];
+      ascii_ = [];
+  	  if (document.getElementById('scale').checked === true) {
+      	  rec = setInterval(function () {
+      	    var ln = new Array(canvasHeight); ln.fill("⠀");
+            for (var i=0; i<keysPressed.length; i++) {
+              if (keysPressed[i] > 0) {
+                var p = canvasHeight-(Math.log2(i*bpf))-pitchBend;
+                ln[p] = dots[keysPressed[i]];
+              }
+            }
+            ascii_data[timer] = ln.join("");
+            ascii.innerText += ln + "\n";
+            timer++;
+          }, timerInterval);
+  	  } else {
+    	    rec = setInterval(function () {
+      	    var ln = new Array(canvasHeight); ln.fill("⠀");
+            for (var i=0; i<keysPressed.length; i++) {
+              if (keysPressed[i] > 0) {
+                var p = canvasHeight-(i*bpo/12)-pitchBend;
+                ln[p] = dots[keysPressed[i]];
+              }
+            }
+            ascii_data[timer] = ln.join("");
+            ascii.innerText += ln + "\n";
+            timer++;
+    	    }, timerInterval);
+  	  }
+	    document.getElementById('scale').disabled = true;
+	  } else {
+	    ascii.style.transform = "rotateZ(0deg) rotateX(0deg)";
+      ascii.style.transformOrigin = "0 0";
+	    clearInterval(rec);
+	    rec = null;
+	    document.getElementById('scale').disabled = false;
+	  }
+	}
+	
+// Convert an AudioBuffer to a Blob using WAVE representation
+function bufferToWave(abuffer, len) {
+  var numOfChan = abuffer.numberOfChannels,
+      length = len * numOfChan * 2 + 44,
+      buffer = new ArrayBuffer(length),
+      view = new DataView(buffer),
+      channels = [], i, sample,
+      offset = 0,
+      pos = 0;
+
+  // write WAVE header
+  setUint32(0x46464952);                         // "RIFF"
+  setUint32(length - 8);                         // file length - 8
+  setUint32(0x45564157);                         // "WAVE"
+
+  setUint32(0x20746d66);                         // "fmt " chunk
+  setUint32(16);                                 // length = 16
+  setUint16(1);                                  // PCM (uncompressed)
+  setUint16(numOfChan);
+  setUint32(abuffer.sampleRate);
+  setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+  setUint16(numOfChan * 2);                      // block-align
+  setUint16(16);                                 // 16-bit (hardcoded in this demo)
+
+  setUint32(0x61746164);                         // "data" - chunk
+  setUint32(length - pos - 4);                   // chunk length
+
+  // write interleaved data
+  for(i = 0; i < abuffer.numberOfChannels; i++)
+    channels.push(abuffer.getChannelData(i));
+
+  while(pos < length) {
+    for(i = 0; i < numOfChan; i++) {             // interleave channels
+      sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+      sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0; // scale to 16-bit signed int
+      view.setInt16(pos, sample, true);          // write 16-bit sample
+      pos += 2;
+    }
+    offset++                                     // next source sample
+  }
+
+  // create Blob
+  return new Blob([buffer], {type: "audio/wav"});
+
+  function setUint16(data) {
+    view.setUint16(pos, data, true);
+    pos += 2;
+  }
+
+  function setUint32(data) {
+    view.setUint32(pos, data, true);
+    pos += 4;
+  }
+}
+
+function log_pos(x, min, max) // turns a logarithmic position (i.e. band number/band count) to a frequency
+{
+	return min * Math.pow(2.0, x * (Math.log2(max) - Math.log2(min)));
+}
+
+function log_pos_inv(x, min, max)  // turns a frequency to a logarithmic position (i.e. band number/band count)
+{
+        return Math.log2(x / min) / (Math.log2(max) - Math.log2(min));
+}
+
+function smallprimes(x)   // returns 1 if x is only made of these small primes
+{
+        var i, p=[2, 3];
+
+        for (i=0; i<2; i++)
+                while (x%p[i] == 0)
+                        x/=p[i];
+
+        return x;
+}
+
+function nextsprime(x)    // returns the next integer only made of small primes
+{
+        while (smallprimes(x)!=1)
+                x++;
+
+        return x;
+}
+
+function getNotes() {
+  var names = ['a', 'a#', 'b', 'c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#'];
+  var i=0;
+  var j=4;
+  notes[0] = [16.3516, 'c'];
+  var intv = Math.pow(2,1/12);
+  var m = Math.round(maxfreq*samplerate);
+  while (notes[i][0] <= m) {
+    notes[i+1] = [notes[i][0]*intv, names[j], ""];
+    for (var k=formantWidth; k<=m; k=k+formantWidth) {
+      if (notes[i+1][0]>=k && notes[i][0]<=k) {
+        notes[i][2] = k;
+      }
+    }
+    i++;
+    j++;
+    if (j==12) {j=0;}
+    console.log(notes[i].join(" "));
+  }
+}
+
+function addScale(r) {
+  var intv = Math.pow(2,1/12);
+  var f_ = basefreq*intv;
+  for (var i=0; i<canvasHeight; i++)
+  {
+    freq[i] = log_pos(i/canvasHeight, basefreq, maxfreq);  //band's central freq
+  	if (Math.abs(freq[i]-f_) <= Math.abs(freq[i-1]-f_) && Math.abs(freq[i]-f_) <= Math.abs(freq[i+1]-f_) || freq[i] >= f_) {
+  	  var _f = freq[i]*samplerate;
+  	  for (var l=1; l<notes.length-1; l++) {
+  	    if (Math.abs(notes[l][0]-_f) < Math.abs(notes[l-1][0]-_f) && Math.abs(notes[l][0]-_f) < Math.abs(notes[l+1][0]-_f)) {
+  	      console.log(r.id+" "+freq[i]*samplerate+" "+f_+" "+notes[l][0]);
+  	      if (notes[l][1].length==2) {
+  	        var clr = "#808080";
+  	      } else {
+  	        var clr = "#ffffff";
+  	      }
+  	      r.innerHTML += "<hr style='top:"+(canvasHeight-i)+"px;color:"+clr+";background-color:"+clr+";'/><span style='top:"+(canvasHeight-i)+"px;left:4px;color:"+clr+";'>"+notes[l][1]+"</span>";
+  	      if (notes[l][1]=="a") {
+  	        r.innerHTML += "<span style='top:"+(canvasHeight-i)+"px;left:2em;color:"+clr+";'>"+Math.round(notes[l][0])+"</span>";
+  	      } else if (notes[l][2]!="") {
+  	        r.innerHTML += "<span style='top:"+(canvasHeight-i)+"px;left:2em;color:"+clr+";'>"+notes[l][2]+"</span>";
+  	      }
+  	    }
+  	  }
+  	  f_ = f_*intv;
+  	}
+  }
+}
+
+var samplerate = 48000, maxfreq = samplerate / 2, basefreq = maxfreq / canvasHeight, pixpersec = 1000 / timerInterval;
+var bpo = canvasHeight / (Math.log2(maxfreq) - Math.log2(basefreq));
+var sbsize = nextsprime(canvasWidth * 2);	    // In Circular mode keep it to sbsize = Xsize * 2;
+var Bc = Math.round(0.25 * sbsize);
+var Mh = (sbsize + 1) >> 1;
+var TRANSITION_BW_SYNT = 16.0; // defines the transition bandwidth for the low-pass filter on the envelopes during synthesis
+var tbw = (1.0/TRANSITION_BW_SYNT) * (Mh-1), bwl = Math.ceil(tbw); // double transition bandwidth
+var freq = [], filter = [];
+
+maxfreq /= samplerate;
+basefreq /= samplerate;       // basefreq is now in fraction of the sampling rate instead of Hz
+pixpersec /= samplerate;      // pixpersec is now in fraction of the sampling rate instead of Hz
+
+var bpf = formantWidth/(maxfreq-basefreq)*canvasHeight/samplerate;
+
+getNotes();
+addScale(ruler_log);
+
+// generation of the frequency-domain filter
+for (var i=1; i<Mh; i++)
+	filter[i] = 1.0;
+
+for (var i=0; i<bwl; i++)
+{
+	var x = i / tbw; // position in the antiderivate of the Blackman function of the sample we're at, between 0.0 and 1.0
+	var coef = 0.42*x - (0.5/(2.0*Math.PI))*Math.sin(2.0*Math.PI*x) + (0.08/(4.0*Math.PI))*Math.sin(4.0*Math.PI*x); // antiderivative of the Blackman function
+	coef *= 1.0/0.42;
+	filter[i+1] = coef;
+	filter[Mh-1-i] = coef;
+}
+
+var FFTW_ESTIMATE = (1 << 6);
+var fftwModule = FFTWModule({});
+var fftw_plan_r2r_1d = fftwModule.cwrap('fftwf_plan_r2r_1d', 'number', ['number', 'number', 'number', 'number', 'number']);
+var fftw_execute = fftwModule.cwrap('fftwf_execute', 'void', ['number']);
+var fftw_destroy_plan = fftwModule.cwrap('fftwf_destroy_plan', 'void', ['number']);
+
+function fft_alloc(N)
+{
+	var ptr = fftwModule._malloc(N*4);
+	var a = new Float32Array(fftwModule.HEAPU8.buffer, ptr, N);
+	return [a, ptr];
+}
+var fft_free = fftwModule._free;
+
+function fft(ptr, N, method) /* method : 0 = DFT, 1 = IDFT, 2 = DHT */
+{
+        var p = fftw_plan_r2r_1d(N, ptr, ptr, method, FFTW_ESTIMATE);
+        fftw_execute(p);
+        fftw_destroy_plan(p);
+}
+
+function synt_sine(d)
+{
+        /*
+         d is the original image (spectrogram)
+         s is the output sound
+         sband is the band's envelope upsampled and shifted up in frequency
+         sbsize is the length of sband
+         sine is the random sine look-up table
+         *samplecount is the output sound's length
+         ib is the band iterator
+         i is a general purpose iterator
+         bands is the total count of bands
+         Fc is the index of the band's centre in the frequency domain on the new signal
+         Bc is the index of the band's centre in the frequency domain on sband (its imaginary match being sbsize-Bc)
+         Mh is the length of the real or imaginary part of the envelope's FFT, DC element included and Nyquist element excluded
+         Mn is the length of the real or imaginary part of the sound's FFT, DC element included and Nyquist element excluded
+         freq is the band's central frequency
+         rphase is the band's sine's random phase
+        */
+
+	var samplecount = Math.round(0.5*sbsize/pixpersec); // Do not change this value as it would stretch envelopes
+	var Mn = (samplecount + 1) >> 1;
+
+  var [s, s_ptr] = fft_alloc(samplecount);              // allocation of the sound signal
+	var [sband, sband_ptr] = fft_alloc(sbsize);           // allocation of the shifted band
+	var sine = [];
+	
+        s.fill(0);
+
+        for (var ib=0; ib<canvasHeight; ib++)
+        {
+                sband.fill(0);    // reset sband
+
+                //********Frequency shifting********
+
+                var rphase = (Math.random() - 0.5) * 2 * Math.PI; // random phase between -pi and +pi
+
+                for (var i=0; i<4; i++) {                         // generating the random sine LUT
+                        sine[i]=Math.cos(i*2.0*Math.PI*0.25+rphase);
+                }
+
+                for (var i=0; i<canvasWidth; i++)                 // envelope sampling rate * 2 and frequency shifting by 0.25
+                {
+                        if ((i & 1) == 0)
+                        {
+                                sband[i<<1] = d[canvasHeight-ib-1][i] * sine[0];
+                                sband[(i<<1) + 1] = d[canvasHeight-ib-1][i] * sine[1];
+                        }
+                        else
+                        {
+                                sband[i<<1] = d[canvasHeight-ib-1][i] * sine[2];
+                                sband[(i<<1) + 1] = d[canvasHeight-ib-1][i] * sine[3];
+                        }
+                }
+                //--------Frequency shifting--------
+
+                fft(sband_ptr, sbsize, 0);                        // FFT of the envelope
+                var Fc = Math.round(freq[ib] * samplecount);      // band's centre index (envelope's DC element)
+
+                //********Write FFT********
+
+                for (var i=1; i<Mh; i++)
+                {
+                        if (Fc-Bc+i > 0 && Fc-Bc+i < Mn)     // if we're between frequencies 0 and 0.5 of the new signal and that we're not at Fc
+                        {
+                                s[i+Fc-Bc] += sband[i] * filter[i];                            // Real part
+                                s[samplecount-(i+Fc-Bc)] += sband[sbsize-i] * filter[i];       // Imaginary part
+                        }
+                }
+                //--------Write FFT--------
+        }
+
+        fft(s_ptr, samplecount, 1);                               // IFFT of the final sound
+        samplecount = Math.round(canvasWidth/pixpersec);          // chopping tails by ignoring them
+
+	// normalise the signal to the +/- 1.0 range
+
+  var max=0;
+	for (var ix=0; ix<samplecount; ix++)
+		if (Math.abs(s[ix])>max)
+			max=Math.abs(s[ix]);
+
+        if (max!=0.0)
+                max = 1.0/max;
+
+	for (var ix=0; ix<samplecount; ix++)
+		s[ix]*=max;
+
+	var wavfile = new Float32Array(s.slice(0, samplecount));
+
+	fft_free(s_ptr);
+	fft_free(sband_ptr);
+	return wavfile;
+}
+
+
+function toggleColor(cb) {
+  if (cb.checked) {
+    cb.parentElement.style.color = 'white';
+  } else {
+    cb.parentElement.style.color = 'gray';
+  }
+}
+
+function showCredits() {
+  var credits = document.getElementById("footer");
+  if (credits.style.display != "block") {
+    credits.style.display = "block";
+  } else {
+    credits.style.display = "none";
+  }
+}
+
+
+
+
+var songPlaying = false;
+var song = document.getElementById("open_audio");
+var analyser = null;
+var songSource = null;
+var spectrum = null;
+var spectroOffset = 0;
+var ascii_data = [];
+var ascii_ = [];
+
+function playSong () {
+  if (!context) {
+		context = new AudioContext({latencyHint:"interactive", sampleRate: samplerate});
+		analyser = context.createAnalyser();
+		song.src = "../metal.wav";
+    song.load();
+    songSource = context.createMediaElementSource(song);
+    analyser.fftSize = fftSize;
+    songSource.connect(analyser);
+    analyser.connect(context.destination);
+    spectrum = new Uint8Array(analyser.frequencyBinCount);
+  }
+
+  ;(function updateSpectrum() {
+    if (songPlaying === true) {
+      requestAnimationFrame(updateSpectrum)
+      analyser.getByteFrequencyData(spectrum)
+    }
+  })();
+
+  ;(function drawSpectrogram() {
+    if (songPlaying === true) {
+      requestAnimationFrame(drawSpectrogram)
+      ascii_data[spectroOffset] = "";
+      for (var i = spectrum.length-1; i >= 0; i--) {
+        ascii_data[spectroOffset] += dots[spectrum[i]];
+      }
+      ascii.innerText += ascii_data[spectroOffset] + "\n";
+      spectroOffset++;
+    }
+  })()
+}
+
+function songStarted() {
+  songPlaying = true;
+  ascii.style.transform = "rotateZ(90deg) rotateX(180deg)";
+  ascii.style.transformOrigin = "0 0";
+  ascii.innerText = "";
+  ascii_data = [];
+  ascii_ = [];
+  spectroOffset = 0;
+}
+
+function songStopped() {
+  songPlaying = false;
+  ascii.style.transform = "rotateZ(0deg) rotateX(0deg)";
+  ascii.style.transformOrigin = "0 0";
+  for (var i=0; i<spectroOffset; i++) {
+    ascii_data[i] = ascii_data[i].split("");
+  }
+  ascii_ = ascii_data[0].map((val, index) => ascii_data.map(row => row[index]));
+  var offset_old = 0;
+  var o_ = new Array(spectroOffset);
+  o_.fill("⠀");
+  o_ = o_.join("");
+  for (var i=0; i<ascii_.length; i++) {
+    var offset = canvasHeight - Math.round(Math.log2(ascii_.length-i)*bpo);
+    var o = new Array(offset-offset_old);
+    o.fill(o_);
+    o[o.length-1] = ascii_[i].join("");
+    ascii_[i] = o.join("\n");
+    offset_old = offset;
+  }
+  ascii_ = ascii_.join("\n").split("\n").slice(-canvasHeight);
+  ascii.innerText = ascii_.join("\n");
+  ascii_data = [];
+  for (var i=0; i<ascii_.length; i++) {
+    ascii_data[i] = ascii_[i].split("");
+  }
+}
+
+  function songSwitch() {
+    if (!song.src) {playSong();}
+    if (songPlaying === true) {
+      song.pause();
+      songStopped();
+    } else {
+      song.play();
+      songStarted();
+    }
+  }
+
+/*
+var lg = false;
+var bpo = 48;
+var canvasHeight = 512;
+function scale() {
+  var l = document.getElementsByTagName("path");
+  if (lg === false) {
+    for (var i=0; i<l.length; i++) {
+      var p = l[i].getAttribute('d').slice(1).split("L");
+      for (var j=0; j<p.length; j++) {
+        var xy = p[j].split(" ");
+        p[j] = xy[0] + " " + (canvasHeight - Math.log2(canvasHeight - xy[1])*bpo);
+      }
+      l[i].setAttribute('d', "M"+p.join("L"));
+    }
+    lg = true;
+  } else {
+    for (var i=0; i<l.length; i++) {
+      var p = l[i].getAttribute('d').slice(1).split("L");
+      for (var j=0; j<p.length; j++) {
+        var xy = p[j].split(" ");
+        p[j] = xy[0] + " " + (canvasHeight - Math.pow(2, (canvasHeight - xy[1])/bpo));
+      }
+      l[i].setAttribute('d', "M"+p.join("L"));
+    }
+    lg = false;
+  }
+}
+*/
+
+</script>
+
+<div id="footer">
+  Spectral drawing <a href="https://tyomitch.github.io" target="_blank">demo</a> by <a href="https://github.com/tyomitch/tyomitch.github.io" target="_blank">Artyom Skrobov</a>.
+</div>
+
+</body>
+</html>
