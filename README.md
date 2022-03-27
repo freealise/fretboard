@@ -10,7 +10,7 @@ Remake the interface based on https://developer.mozilla.org/en-US/docs/Web/API/W
 # TODO for beta:
 MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
 Touch radius / angle -> volume / pan or noise (?) of notes and harmonics (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius) <br/>
-touch sensitivity (both coordinates + velocity + rotationAngle)<br/>
-display spectrum as modes of string on itself with time slider, noise by clipping<br/>
+touch sensitivity (both coordinates + radius + rotationAngle)<br/>
+oscillator is noise with/without comb filter, 10 peaking filters controlled by touch radius (volume by x offset from string)<br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
