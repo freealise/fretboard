@@ -11,6 +11,5 @@ Remake the interface based on https://developer.mozilla.org/en-US/docs/Web/API/W
 MIDI in/out to and from DAWs (16 channels for microtonality; read file ?) - midi_out.html<br/>
 Touch radius / angle -> volume / pan or am chorus (?) (https://developers.google.com/web/updates/2015/07/rotationAngle-and-touchRadius)<br/>
 touch sensitivity (both coordinates + radius + rotationAngle)<br/>
-harmonics depend on modes of string for a given position (or shape the string by x coord)<br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
