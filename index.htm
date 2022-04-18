@@ -279,7 +279,7 @@
           masterGainNode.gain.linearRampToValueAtTime(0, context.currentTime + 0.02);
 
           setTimeout(function () {
-            oscNode.stop();
+            //oscNode.stop();
             masterGainNode.disconnect(context.destination);
             visualizer.releaseConnection(masterGainNode);
             oscNode = undefined;
