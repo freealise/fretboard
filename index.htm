@@ -239,9 +239,7 @@
 
           modGainNode = context.createGain();
           modGainNode.gain.value = frequency * parseFloat(modDepthSlider.value) * 0.01
-
           modOscNode.connect(modGainNode);
-          modGainNode.connect(oscNode.frequency);
 
           masterFilterNode = context.createBiquadFilter();
           masterFilterNode.frequency.value = 5000;
@@ -250,6 +248,7 @@
 
           masterGainNode = context.createGain();
           masterGainNode.gain.value = 0;
+          modGainNode.connect(masterGainNode.gain);
 
           for (var i = 0; i <= 4; i++) {
             filterNodes[i] = context.createBiquadFilter();
