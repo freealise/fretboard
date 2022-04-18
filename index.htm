@@ -39,7 +39,7 @@
       <span id="vowel-ipa-display" class="label"></span><span id="vowel-ex-display" class="label"></span>
       <br/>
       <span class="label">Frequency</span>
-      <input type="range" id="freq-slider" class="slider" min="0" max="400" step="1" value="80" />
+      <input type="range" id="freq-slider" class="slider" min="0" max="4" value="0" />
       <span id="freq-display" class="label"></span>
       <br/>
       <span class="label">Modulator</span>
@@ -193,7 +193,7 @@
       document.getElementById('stop').addEventListener('click', stop);
 
       function getFrequency(slider) {
-        return Math.min(Math.round((Math.pow(2, slider.value / 40)) * 20), 20000);
+        return Math.pow(2, slider.value);
       }
 
       function getIntermediate(prop, idx) {
@@ -304,10 +304,10 @@
 
       function updateFrequency() {
         frequency = getFrequency(freqSlider);
-        freqDisplay.textContent = frequency + ' hz';
+        freqDisplay.textContent = frequency + ' x';
 
         if (oscNode) {
-          oscNode.frequency.value = frequency;
+          oscNode.playbackRate.value = frequency;
         }
       }
 
