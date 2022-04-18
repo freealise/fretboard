@@ -63,7 +63,7 @@
     </div>
   </body>
 
-  <script type="text/javascript" src="js/frequency-visualizer.js"></script>
+  <script type="text/javascript" src="js/spectrogram-visualizer.js"></script>
   <script type="text/javascript">
 
     (function () {
@@ -165,7 +165,7 @@
       ];
 
       var context = new AudioContext();
-      var visualizer = new App.FrequencyVisualizer(context, document.getElementById('visualizer'));
+      var visualizer = new App.SpectrogramVisualizer(context, document.getElementById('visualizer'));
 
       var oscNode, masterGainNode, masterFilterNode, modOscNode, modGainNode, filterNodes = [], gainNodes = [];
       var formant, frequency, modFrequency, modDepth;
