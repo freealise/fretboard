@@ -51,6 +51,7 @@
       <span id="mod-depth-display" class="label">0%</span>
     </div>
     <div>
+      Duration: <input id="buffer-length" type="number" min="1" max="30" step="1" value="1" /> min.
       <input type="button" id="start" value="start" />
       <input type="button" id="stop" value="stop" />
     </div>
@@ -58,8 +59,7 @@
       <canvas id="visualizer" width="1024" height="300"></canvas>
     </div>
     <div class="nav">
-      <a href="noise.html">&gt; Noise</a><br/>
-      <a href="index.html">&gt; Index</a>
+      <a href="/">&lt; Return</a>
     </div>
   </body>
 
@@ -187,6 +187,8 @@
       var modDepthSlider = document.getElementById('mod-depth-slider');
       modDepthSlider.addEventListener('input', updateDepth);
 
+      var bufferLength = document.getElementById('buffer-length');
+      
       document.getElementById('start').addEventListener('click', start);
       document.getElementById('stop').addEventListener('click', stop);
 
@@ -209,8 +211,8 @@
           //oscNode.setPeriodicWave(periodicWave);
           
           
-          // Create an empty 60-minute stereo buffer at the sample rate of the AudioContext
-          var myArrayBuffer = context.createBuffer(2, context.sampleRate * 3600, context.sampleRate);
+          // Create an empty stereo buffer at the sample rate of the AudioContext
+          var myArrayBuffer = context.createBuffer(2, context.sampleRate * bufferLength.value * 60, context.sampleRate);
 
           // Fill the buffer with white noise;
           // just random values between -1.0 and 1.0
