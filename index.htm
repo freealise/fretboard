@@ -39,7 +39,7 @@
       <span id="vowel-ipa-display" class="label"></span><span id="vowel-ex-display" class="label"></span>
       <br/>
       <span class="label">Frequency</span>
-      <input type="range" id="freq-slider" class="slider" min="0" max="4" value="0" />
+      <input type="range" id="freq-slider" class="slider" min="32" max="512" step="1" value="128" />
       <span id="freq-display" class="label"></span>
       <br/>
       <span class="label">Modulator</span>
@@ -193,13 +193,17 @@
       document.getElementById('stop').addEventListener('click', stop);
 
       function getFrequency(slider) {
-        return Math.pow(2, slider.value);
+        return Math.round(slider.value);
       }
 
       function getIntermediate(prop, idx) {
         var i = Math.floor(vowelSlider.value);
         var d = vowelSlider.value - i;
-        var dx = (vowel[i + 1][prop][idx] - vowel[i][prop][idx]) * d;
+        if (vowel[i + 1]) {
+          var dx = (vowel[i + 1][prop][idx] - vowel[i][prop][idx]) * d;
+        } else {
+          var dx = 0;
+        }
         return vowel[i][prop][idx] + dx;
       }
       
@@ -209,7 +213,8 @@
             left = noiseBuffer.getChannelData(0),
             right = noiseBuffer.getChannelData(1);
         for (var i = 0; i < noiseBuffer.length; i++) {
-          if (i/512 == parseInt(i/512)) {
+          var samples = context.sampleRate/frequency;
+          if (i/samples) == parseInt(i/samples)) {
             left[i] = 1;
             right[i] = 1;
           } else {
@@ -324,11 +329,11 @@
 
       function updateFrequency() {
         frequency = getFrequency(freqSlider);
-        freqDisplay.textContent = frequency + ' x';
+        freqDisplay.textContent = frequency + ' hz';
 
-        if (oscNode) {
-          oscNode.playbackRate.value = frequency;
-        }
+        //if (oscNode) {
+        //  oscNode.frequency.value = frequency;
+        //}
       }
 
       function updateModulator() {
