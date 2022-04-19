@@ -51,7 +51,7 @@
       <span id="mod-depth-display" class="label">0%</span>
     </div>
     <div>
-      Duration: <input id="buffer-length" type="number" min="1" max="30" step="1" value="1" /> min.
+      Duration: <input id="buffer-length" type="number" min="1" max="600" step="1" value="1" /> sec.
       <input type="button" id="start" value="start" />
       <input type="button" id="stop" value="stop" />
     </div>
@@ -202,6 +202,24 @@
         var dx = (vowel[i + 1][prop][idx] - vowel[i][prop][idx]) * d;
         return vowel[i][prop][idx] + dx;
       }
+      
+      function newReverb() {
+        var convolver = context.createConvolver(),
+            noiseBuffer = context.createBuffer(2, context.sampleRate * bufferLength.value, context.sampleRate),
+            left = noiseBuffer.getChannelData(0),
+            right = noiseBuffer.getChannelData(1);
+        for (var i = 0; i < noiseBuffer.length; i++) {
+          if (i/512 == parseInt(i/512)) {
+            left[i] = 1;
+            right[i] = 1;
+          } else {
+            left[i] = 0;
+            right[i] = 0;
+          }
+        }
+        convolver.buffer = noiseBuffer;
+        return convolver;
+    }
 
       function start() {
         if (!oscNode) {
@@ -212,7 +230,7 @@
           
           
           // Create an empty stereo buffer at the sample rate of the AudioContext
-          var myArrayBuffer = context.createBuffer(2, context.sampleRate * bufferLength.value * 60, context.sampleRate);
+          var myArrayBuffer = context.createBuffer(2, context.sampleRate * bufferLength.value, context.sampleRate);
 
           // Fill the buffer with white noise;
           // just random values between -1.0 and 1.0
@@ -222,14 +240,7 @@
             for (var i = 0; i < myArrayBuffer.length; i++) {
               // Math.random() is in [0; 1.0]
               // audio needs to be in [-1.0; 1.0]
-              nowBuffering[i] = 0;
-              for (var j=0; j<256; j++) {
-                if (nowBuffering[i-j*512]) {
-                  nowBuffering[i] += nowBuffering[i-j*512];
-                }
-              }
-              nowBuffering[i] += Math.random() * 2 - 1;
-              nowBuffering[i] /= 256;
+              nowBuffering[i] = Math.random() * 2 - 1;
             }
           }
 
@@ -239,6 +250,8 @@
 
           // set the buffer in the AudioBufferSourceNode
           oscNode.buffer = myArrayBuffer;
+          var reverb = newReverb();
+          oscNode.connect(reverb);
           
 
           modOscNode = context.createOscillator();
@@ -251,7 +264,7 @@
           masterFilterNode = context.createBiquadFilter();
           masterFilterNode.frequency.value = 5000;
           masterFilterNode.type = 'lowpass';
-          oscNode.connect(masterFilterNode);
+          reverb.connect(masterFilterNode);
 
           masterGainNode = context.createGain();
           masterGainNode.gain.value = 0;
