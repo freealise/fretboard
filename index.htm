@@ -214,7 +214,7 @@
             right = noiseBuffer.getChannelData(1);
         for (var i = 0; i < noiseBuffer.length; i++) {
           var samples = context.sampleRate/frequency;
-          if (i/samples) == parseInt(i/samples)) {
+          if (i/samples == parseInt(i/samples)) {
             left[i] = 1;
             right[i] = 1;
           } else {
