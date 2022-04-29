@@ -242,7 +242,7 @@ function init(r) {
       
       gainParam = whiteNoiseNode.parameters.get('customGain');
       gainParam.setValueAtTime(0, audioContext.currentTime);
-      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.5);
+      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
       document.getElementById("play").innerText = "task_alt";
       
       var chunks = [];
@@ -278,10 +278,10 @@ function init(r) {
     });
   } else {
     if (gainParam.value > 0.0) {
-      gainParam.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.5);
+      gainParam.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.001);
       document.getElementById("play").innerText = "power_settings_new";
     } else {
-      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.5);
+      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
       document.getElementById("play").innerText = "task_alt";
     }
   }
