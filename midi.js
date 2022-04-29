@@ -1,123 +1,103 @@
-var json = {
-    "`":[0],
-    "1":[1],
-    "q":[2],
-    "2":[3],
-    "w":[4],
-    "3":[5],
-    "e":[6],
-    "4":[7],
-    "r":[8],
-    "5":[9],
-    "t":[10],
-    "6":[11],
-    "y":[12],
-    "7":[13],
-    "u":[14],
-    "8":[15],
-    "i":[16],
-    "9":[17],
-    "o":[18],
-    "0":[19],
-    "p":[20],
-    "-":[21],
-    "[":[22],
-    "=":[23],
-    "]":[24],
-    "\\":[25],
-    "a":[26],
-    "z":[27],
-    "s":[28],
-    "x":[29],
-    "d":[30],
-    "c":[31],
-    "f":[32],
-    "v":[33],
-    "g":[34],
-    "b":[35],
-    "h":[36],
-    "n":[37],
-    "j":[38],
-    "m":[39],
-    "k":[40],
-    ",":[41],
-    "l":[42],
-    ".":[43],
-    ";":[44],
-    "/":[45],
-    "'":[46],
-    "~":[0],
-    "!":[1],
-    "@":[2],
-    "#":[3],
-    "$":[4],
-    "%":[5],
-    "^":[6],
-    "&":[7],
-    "*":[8],
-    "(":[9],
-    ")":[10],
-    "_":[11],
-    "+":[12],
-    "Q":[13],
-    "W":[14],
-    "E":[15],
-    "R":[16],
-    "T":[17],
-    "Y":[18],
-    "U":[19],
-    "I":[20],
-    "O":[21],
-    "P":[22],
-    "{":[23],
-    "}":[24],
-    "|":[25],
-    "A":[26],
-    "S":[27],
-    "D":[28],
-    "F":[29],
-    "G":[30],
-    "H":[31],
-    "J":[32],
-    "K":[33],
-    "L":[34],
-    ":":[35],
-    "\"":[36],
-    "Z":[37],
-    "X":[38],
-    "C":[39],
-    "V":[40],
-    "B":[41],
-    "N":[42],
-    "M":[43],
-    "<":[44],
-    ">":[45],
-    "?":[46]
+var kbrd = {
+  '`': [0, 0],
+  '1': [1, 0],
+  '2': [2, 0],
+  '3': [3, 0],
+  '4': [4, 0],
+  '5': [5, 0],
+  '6': [6, 0],
+  '7': [7, 0],
+  '8': [8, 0],
+  '9': [9, 0],
+  '0': [10,0],
+  '-': [11,0],
+  '=': [12,0],
+  'Backspace': [13,0],
+  'Tab': [0, 1],
+  'q': [1, 1],
+  'w': [2, 1],
+  'e': [3, 1],
+  'r': [4, 1],
+  't': [5, 1],
+  'y': [6, 1],
+  'u': [7, 1],
+  'i': [8, 1],
+  'o': [9, 1],
+  'p': [10,1],
+  '[': [11,1],
+  ']': [12,1],
+  '\\': [13,1],
+  'CapsLock': [0, 2],
+  'a': [1, 2],
+  's': [2, 2],
+  'd': [3, 2],
+  'f': [4, 2],
+  'g': [5, 2],
+  'h': [6, 2],
+  'j': [7, 2],
+  'k': [8, 2],
+  'l': [9, 2],
+  ';': [10,2],
+  '\'': [11,2],
+  'Enter': [12,2],
+  'Shift': [0, 3],
+  'z': [1, 3],
+  'x': [2, 3],
+  'c': [3, 3],
+  'v': [4, 3],
+  'b': [5, 3],
+  'n': [6, 3],
+  'm': [7, 3],
+  ',': [8, 3],
+  '.': [9, 3],
+  '/': [10,3],
 }
+
+var baseKey = 36;
+var pitchBend = 0;
+var pitchRange = 1;
 
 function noteOn(n, v) {
   console.log( "Note on: " + n + " " + v);
-  createOscillator(null, n, v);
+  var kn = n-baseKey;
+  var o = 0;
+	while (kn>=24) {
+	  kn -= 24;
+	  o+=2;
+	}
+	playNote(kn, o*12*64, v/4);
 }
 
 function noteOff(n) {
   console.log( "Note off: " + n);
-  stopOscillator(null, n);
+  var kn = n-baseKey;
+	while (kn>=24) {
+	  kn -= 24;
+	}
+  stopNote(kn);
 }
 
 function controller(n, v) {
   console.log( "Controller: " + n + " " + v);
-  changeBaseFreq(v);
+  for (var i=0; i<25; i++) {
+    volume(i, v/4);
+  }
 }
 
 function pitchWheel(p) {
   console.log( "Pitch bend: " + p);
-  changeBaseFreq(p*12);
+  for (var i=0; i<25; i++) {
+    biquadFilter[i].detune.linearRampToValueAtTime(tuning[i]+p*100*pitchRange, audioContext.currentTime + 0.001);
+  }
 }
 
 function polyPressure(n, v) {
   console.log( "Poly aftertouch: " + n + " " + v);
-  changeFrequency(null, n, v);
+  var kn = n-baseKey;
+	while (kn>=24) {
+	  kn -= 24;
+	}
+  volume(kn, v/4);
 }
 
 function midiMessageReceived( ev ) {
@@ -128,19 +108,19 @@ function midiMessageReceived( ev ) {
 
   if (channel == 9)
     return
-  if ( cmd==8 || ((cmd==9)&&(velocity==0)) ) { // with MIDI, note on with velocity zero is the same as note off
+  if ( cmd==8 || ((cmd==9)&&(velocity===0)) ) { // with MIDI, note on with velocity zero is the same as note off
     // note off
     noteOff( noteNumber );
   } else if (cmd == 9) {
     // note on
-    noteOn( noteNumber, velocity/127.0);
+    noteOn( noteNumber, velocity);
   } else if (cmd == 11) {
-    controller( noteNumber, velocity/127.0);
+    controller( noteNumber, velocity);
   } else if (cmd == 14) {
     // pitch wheel
     pitchWheel( ((velocity * 128.0 + noteNumber)-8192)/8192.0 );
   } else if ( cmd == 10 ) {  // poly aftertouch
-    polyPressure(noteNumber,velocity/127.0)
+    polyPressure(noteNumber,velocity)
   } else
   console.log( "" + ev.data[0] + " " + ev.data[1] + " " + ev.data[2])
 }
@@ -215,54 +195,7 @@ function onMIDISystemError( err ) {
 
 //init: start up MIDI
 window.addEventListener('load', function() {
-  if (navigator.requestMIDIAccess)
+  if (navigator.requestMIDIAccess) {
     navigator.requestMIDIAccess().then( onMIDIStarted, onMIDISystemError );
-
-});
-
-window.addEventListener('keydown', function (e) {
-    console.log( "Key down: " + e.key + " " + json[e.key]);
-    if (json[e.key]) {
-      if (shift_down === false) {
-        var key = parseInt(json[e.key]);
-        if (!keydown[key] || keydown[key] === false) {
-          keydown[key] = true;
-          key_down = true;
-          noteOn(key, 0.5);
-        }
-      } else {
-        changeLevel(e);
-      }
-    } else if (e.key == "ArrowRight") {
-      moveSelect(1);
-    } else if (e.key == "ArrowLeft") {
-      moveSelect(-1);
-    } else if (e.key == "ArrowUp") {
-      timeScroll(false);
-    } else if (e.key == "ArrowDown") {
-      timeScroll(true);
-    } else if (e.key == "Shift") {
-      shift_down = true;
-    }
-});
- 
-window.addEventListener('keyup', function (e) {
-    console.log( "Key up: " + e.key + " " + json[e.key]);
-    if (json[e.key]) {
-      var key = parseInt(json[e.key]);
-      if (keydown[key] && keydown[key] === true) {
-        keydown[key] = false;
-        key_down = false;
-        noteOff(key);
-      }
-    } else if (e.key == "Shift") {
-      shift_down = false;
-    }
-});
-
-window.addEventListener('mousemove', function (e) {
-  if (key_down === true) {
-    console.log( "Mouse move: " + e.clientX + " " + e.clientY);
-    changeBaseFreq((e.clientX/screen.width+e.clientY/screen.height)*24);
   }
 });
