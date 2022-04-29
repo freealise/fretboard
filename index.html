@@ -263,7 +263,7 @@ function init(r) {
       for (var i=0; i<25; i++) {
         biquadFilter[i] = audioContext.createBiquadFilter();
         biquadFilter[i].type = "bandpass";
-        biquadFilter[i].Q.value = 500;
+        biquadFilter[i].Q.value = 1000;
         biquadFilter[i].frequency.value = baseFreq*Math.pow(2,i/12);
         biquadFilter[i].detune.value = tuning[i];
         
@@ -316,8 +316,8 @@ function pitchShift(key, p, v) {
 
 function volume(key, v) {
   if (gain[key] && kd[key] === true) {
-    v = -Math.cos(v*Math.PI*2/64)+1;
-    gain[key].gain.linearRampToValueAtTime(v*50.0, audioContext.currentTime + 0.001);
+    v = -Math.cos(v*Math.PI*2/64)/2+0.5;
+    gain[key].gain.linearRampToValueAtTime(v, audioContext.currentTime + 0.001);
   }
 }
 
