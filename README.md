@@ -18,6 +18,6 @@ Written in Javascript using Web Audio API, works in modern browsers.
 
 ### TODO:
 MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html<br/>
-Touch radius -> volume / pan or AM chorus (?)<br/>
+Simplify to sine oscillators; touch radius -> volume / pan or AM chorus (?)<br/>
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
