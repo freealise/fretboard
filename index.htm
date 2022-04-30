@@ -216,7 +216,7 @@ for (var i=0; i<25; i++) {
 
 var audioContext = null;
 var gainParam = null;
-var biquadFilter = [];
+var osc = [];
 var gain = [];
 var tuning = new Array(25);
 for (var i=0; i<25; i++) {
@@ -237,51 +237,46 @@ function init(r) {
   	} else {
   	  audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)({latencyHint:"interactive",sampleRate: r});
   	}
-    audioContext.audioWorklet.addModule('white-noise-processor.js').then(function (value) {
-      var whiteNoiseNode = new AudioWorkletNode(audioContext, 'white-noise-processor');
+    gainParam = audioContext.createGain();
+    gainParam.gain.setValueAtTime(0, audioContext.currentTime);
+    gainParam.gain.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
+    document.getElementById("play").innerText = "task_alt";
       
-      gainParam = whiteNoiseNode.parameters.get('customGain');
-      gainParam.setValueAtTime(0, audioContext.currentTime);
-      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
-      document.getElementById("play").innerText = "task_alt";
+    var chunks = [];
+    var dest = audioContext.createMediaStreamDestination();
+    mediaRecorder = new MediaRecorder(dest.stream);
       
-      var chunks = [];
-      var dest = audioContext.createMediaStreamDestination();
-      mediaRecorder = new MediaRecorder(dest.stream);
-      
-      mediaRecorder.ondataavailable = function(evt) {
-        // push each chunk (blobs) in an array
-        chunks.push(evt.data);
-      };
+    mediaRecorder.ondataavailable = function(evt) {
+      // push each chunk (blobs) in an array
+      chunks.push(evt.data);
+    };
     
-      mediaRecorder.onstop = function(evt) {
-        // Make blob out of our blobs, and open it.
-        var blob = new Blob(chunks, { 'type' : 'audio/wav' });
-        document.querySelector("audio").src = URL.createObjectURL(blob);
-      };
+    mediaRecorder.onstop = function(evt) {
+      // Make blob out of our blobs, and open it.
+      var blob = new Blob(chunks, { 'type' : 'audio/wav' });
+      document.querySelector("audio").src = URL.createObjectURL(blob);
+    };
       
-      for (var i=0; i<25; i++) {
-        biquadFilter[i] = audioContext.createBiquadFilter();
-        biquadFilter[i].type = "bandpass";
-        biquadFilter[i].Q.value = 1000;
-        biquadFilter[i].frequency.value = baseFreq*Math.pow(2,i/12);
-        biquadFilter[i].detune.value = tuning[i];
+    for (var i=0; i<25; i++) {
+      osc[i] = audioContext.createOscillator();
+      osc[i].type = "sine";
+      osc[i].frequency.value = baseFreq*Math.pow(2,i/12);
+      osc[i].detune.value = tuning[i];
         
-        gain[i] = audioContext.createGain();
-        gain[i].gain.value = 0.0;
+      gain[i] = audioContext.createGain();
+      gain[i].gain.value = 0.0;
     
-        whiteNoiseNode.connect(biquadFilter[i]);
-        biquadFilter[i].connect(gain[i]);
-        gain[i].connect(audioContext.destination);
-        gain[i].connect(dest);
-      }
-    });
+      osc[i].connect(gain[i]);
+      gain[i].connect(audioContext.destination);
+      gain[i].connect(dest);
+      osc[i].start();
+    }
   } else {
-    if (gainParam.value > 0.0) {
-      gainParam.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.001);
+    if (gainParam.gain.value > 0.0) {
+      gainParam.gain.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.001);
       document.getElementById("play").innerText = "power_settings_new";
     } else {
-      gainParam.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
+      gainParam.gain.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
       document.getElementById("play").innerText = "task_alt";
     }
   }
@@ -302,11 +297,11 @@ function stopNote(key) {
 }
 
 function pitchShift(key, p, v) {
-  if (biquadFilter[key]) {
+  if (osc[key]) {
     if (l === true) {
-      biquadFilter[key].frequency.linearRampToValueAtTime(baseFreq*2048/(2048-p), audioContext.currentTime + 0.001);
+      osc[key].frequency.linearRampToValueAtTime(baseFreq*2048/(2048-p), audioContext.currentTime + 0.001);
     } else {
-      biquadFilter[key].frequency.linearRampToValueAtTime(baseFreq*Math.pow(2,p/64/12), audioContext.currentTime + 0.001);
+      osc[key].frequency.linearRampToValueAtTime(baseFreq*Math.pow(2,p/64/12), audioContext.currentTime + 0.001);
     }
     if (v) {
       volume(key, v);
@@ -317,13 +312,14 @@ function pitchShift(key, p, v) {
 function volume(key, v) {
   if (gain[key] && kd[key] === true) {
     v = -Math.cos(v*Math.PI*2/64)/2+0.5;
-    gain[key].gain.linearRampToValueAtTime(v, audioContext.currentTime + 0.001);
+    gain[key].gain.linearRampToValueAtTime(v/25, audioContext.currentTime + 0.001);
   }
 }
 
 function quality(key, r) {
-  if (biquadFilter[key]) {
-    biquadFilter[key].Q.linearRampToValueAtTime(r*16, audioContext.currentTime + 0.001);
+  if (osc[key]) {
+    //use for amplitude modulation or pan control
+    //gain[key].gain.linearRampToValueAtTime(r*16, audioContext.currentTime + 0.001);
   }
 }
 
@@ -386,8 +382,8 @@ function detune(key) {
   }
   console.log(n+" / "+d+" = "+n/d);
   tuning[key] = Math.log2(n/d)*12*100;
-  if (biquadFilter[key]) {
-    biquadFilter[key].detune.value = tuning[key];
+  if (osc[key]) {
+    osc[key].detune.value = tuning[key];
   }
   tuning_csv[key] = [-1, n_.value, d_.value];
   setCookie("tuning", tuning_csv, 365);
@@ -399,8 +395,8 @@ function detuneNote(key, v) {
   tuning[key] = v*100;
   n_.value = Math.pow(2,v/12);
   d_.value = 1;
-  if (biquadFilter[key]) {
-    biquadFilter[key].detune.value = tuning[key];
+  if (osc[key]) {
+    osc[key].detune.value = tuning[key];
   }
   tuning_csv[key] = [v, n_.value, d_.value];
   setCookie("tuning", tuning_csv, 365);
