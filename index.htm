@@ -271,14 +271,6 @@ function init(r) {
       gain[i].connect(dest);
       osc[i].start();
     }
-  } else {
-    if (gainParam.gain.value > 0.0) {
-      gainParam.gain.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.001);
-      document.getElementById("play").innerText = "power_settings_new";
-    } else {
-      gainParam.gain.linearRampToValueAtTime(1.0, audioContext.currentTime + 0.001);
-      document.getElementById("play").innerText = "task_alt";
-    }
   }
 }
 
