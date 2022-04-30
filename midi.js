@@ -87,7 +87,7 @@ function controller(n, v) {
 function pitchWheel(p) {
   console.log( "Pitch bend: " + p);
   for (var i=0; i<25; i++) {
-    biquadFilter[i].detune.linearRampToValueAtTime(tuning[i]+p*100*pitchRange, audioContext.currentTime + 0.001);
+    osc[i].detune.linearRampToValueAtTime(tuning[i]+p*100*pitchRange, audioContext.currentTime + 0.001);
   }
 }
 
