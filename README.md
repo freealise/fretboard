@@ -17,7 +17,8 @@ Synthesizer optimized for multitouch screen, lets you play the virtual fretboard
 Written in Javascript using Web Audio API, works in modern browsers.
 
 ### TODO:
-MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html<br/>
-touch radius -> volume / pan or AM chorus / random waveshaper (?)<br/>
+MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html  
+touch radius -> volume / pan or AM chorus  
+convolver (recorded)  
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
