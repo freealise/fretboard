@@ -36,8 +36,8 @@ a {
   left:0;
 }
 #tuning {
-  position:absolute;
-  left:0;
+  position:fixed;
+  right:0;
   top:64px;
 }
 #toolbar a, #tuning a {
@@ -127,6 +127,54 @@ audio {
   background-image: linear-gradient(90deg, transparent 0%, transparent 49%, white 50%, transparent 51%, transparent 100%), repeating-linear-gradient(0deg, transparent 0%, transparent 4.17%, rgba(0,0,0,0.5) 4.17%, rgba(0,0,0,0.5) 8.33%, transparent 8.33%, transparent 12.50%, rgba(0,0,0,0.5) 12.50%, rgba(0,0,0,0.5) 16.67%, transparent 16.67%, transparent 20.83%, rgba(0,0,0,0.5) 20.83%, rgba(0,0,0,0.5) 25.00%, transparent 25.00%, transparent 29.17%, transparent 29.17%, transparent 33.33%, rgba(0,0,0,0.5) 33.33%, rgba(0,0,0,0.5) 37.50%, transparent 37.50%, transparent 41.67%, rgba(0,0,0,0.5) 41.67%, rgba(0,0,0,0.5) 45.83%, transparent 45.83%, transparent 50%);
   background-position: 0 0px;
 }
+#offset {
+  position:absolute;
+  top:64px;
+  left:0;
+  width:26px;
+  height:12px;
+  border: 1px dashed gray;
+  padding:2px;
+  margin:0;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+  font-weight:bold;
+}
+#ruler_v {
+  overflow: hidden;
+  position:absolute;
+  top:80px;
+  left:0;
+  height:1536px;
+  width:16px;
+}
+#ruler_h {
+  overflow: hidden;
+  position:absolute;
+  top:64px;
+  left:32px;
+  height:16px;
+  width:1600px;
+}
+#ruler_v hr {
+  margin:0;
+  padding:0;
+  border:0;
+  background-color:white;
+  width:16px;
+  height:1px;
+  position:absolute;
+}
+#ruler_h hr {
+  margin:0;
+  padding:0;
+  border:0;
+  background-color:white;
+  width:1px;
+  height:16px;
+  position:absolute;
+}
 #notice {
   background-color:white;
   text-align:center;
@@ -157,6 +205,9 @@ audio {
     </select>
   </div>
   <div id="tuners">
+    <input id="offset" type="number" min="1" max="16" step="1" value="1" onchange="off=parseInt(this.value);"/>
+    <div id="ruler_v"><hr style='top:4096px;background-color:transparent;'/></div>
+    <div id="ruler_h"><hr style='left:8192px;background-color:transparent;'/></div>
     <div id="tuning">
       <a title="Save tuning" href="javascript:saveTuning();"><i class='material-icons notranslate'>audio_file</i></a><a id="csv"></a><a title="Open tuning" href="javascript:openTuning();"><i class='material-icons notranslate'>file_open</i></a><input type="file" id="openCsv" onchange="openTuning();"/>
     </div>
@@ -337,14 +388,16 @@ function scale() {
       lg[k] = lg[k].slice(0,-2)+")";
       document.getElementById(k).style.backgroundImage = lg[k];
       document.getElementById(k).style.backgroundPosition = "0 0";
-      document.getElementById("scale").innerText = "reorder";
     }
+    document.getElementById("scale").innerText = "reorder";
+    ruler_v.style.display = "none";
   } else {
     for (var k=0; k<25; k++) {
       document.getElementById(k).style.backgroundImage = "linear-gradient(90deg, transparent 0%, transparent 49%, white 50%, transparent 51%, transparent 100%), repeating-linear-gradient(0deg, transparent 0%, transparent 4.17%, rgba(0,0,0,0.5) 4.17%, rgba(0,0,0,0.5) 8.33%, transparent 8.33%, transparent 12.50%, rgba(0,0,0,0.5) 12.50%, rgba(0,0,0,0.5) 16.67%, transparent 16.67%, transparent 20.83%, rgba(0,0,0,0.5) 20.83%, rgba(0,0,0,0.5) 25.00%, transparent 25.00%, transparent 29.17%, transparent 29.17%, transparent 33.33%, rgba(0,0,0,0.5) 33.33%, rgba(0,0,0,0.5) 37.50%, transparent 37.50%, transparent 41.67%, rgba(0,0,0,0.5) 41.67%, rgba(0,0,0,0.5) 45.83%, transparent 45.83%, transparent 50%)";
       document.getElementById(k).style.backgroundPosition = "0 "+(-k*64)+"px";
-      document.getElementById("scale").innerText = "line_weight";
     }
+    document.getElementById("scale").innerText = "line_weight";
+    ruler_v.style.display = "block";
   }
 }
 
@@ -467,6 +520,31 @@ function getCookie(cname) {
   }
   return "";
 }
+
+
+var off = 1;
+var oct = 768;
+var ruler_v = document.getElementById("ruler_v");
+var ruler_h = document.getElementById("ruler_h");
+
+function scrollRulers(event) {
+  var x = event.pageX;
+  var y = event.pageY;
+  ruler_v.scrollTo(0,Math.log2(off)*oct+oct-y+80);
+  ruler_h.scrollTo(Math.log2(off)*oct+oct-x+32,0);
+}
+
+function countIntervals() {
+  for (var i=1; i<17; i++) {
+    var top = Math.log2(i)*oct+oct;
+    var left = Math.log2(i)*oct+oct;
+    ruler_v.innerHTML += "<hr style='top:"+top+"px;'/>";
+    ruler_h.innerHTML += "<hr style='left:"+left+"px;'/>";
+  }
+}
+countIntervals();
+
+document.body.addEventListener('mousemove', scrollRulers);
 
 </script>
 </body>
