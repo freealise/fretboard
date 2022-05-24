@@ -3,6 +3,7 @@
 <head>
 <title>Display guitar tabs in simple tuning</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
 <style>
 @font-face {
   font-family: "DejaVu";
@@ -20,7 +21,9 @@ body {
 * {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: 'DejaVu', monospace;
+  font-family: 'Fira Code', monospace;
+  font-feature-settings: "onum", "ss01", "cv01", "cv02";
+  line-height:1em;
   color:#ffffff;
 }
 input, textarea {
@@ -37,73 +40,33 @@ input, textarea {
   overflow:scroll;
   font-size:16px;
   user-select:none;
-  line-height:1em;
   clear: both;
 }
 #hl {
   position:absolute;
+  left:0;
   bottom:0;
 }
 #toolbar {
   font-size:16px;
   height:1.5em;
 }
-#fretless_d {
-  display:none;
-}
 #fretless {
+  display:none;
   height:225px;
   font-size:16px;
   position:absolute;
-  left: 2em;
+  left: 0;
   bottom: 0;
-}
-#offset {
-  position: absolute;
-  left:0;
-  bottom:0;
-  width:2em;
-  border:0;
-  background-color:#444444;
-}
-#ruler_v {
-  width: 1em;
-  height: 236px;
-  overflow: hidden;
-  position: absolute;
-  left:0;
-  bottom:0;
-}
-#ruler_h {
-  width: 600px;
-  height: 2em;
-  overflow: hidden;
-  position: absolute;
-  left:2em;
-  bottom:0;
-}
-#ruler_v hr {
-  border:0;
-  background-color:white;
-  width:16px;
-  height:1px;
-  position:absolute;
-}
-#ruler_h hr {
-  border:0;
-  background-color:white;
-  width:1px;
-  height:16px;
-  position:absolute;
 }
 b span {
   display: inline-block;
-  width:0.6025em;
   position: relative;
   top:3.2px;
 }
 sub {
   line-height:0;
+  letter-spacing:-1em;
 }
 sup {
   font-size:inherit;
@@ -133,17 +96,9 @@ A|6---------------7--------------|--6---6-----6---9--------------|
 E|-------------------------------|7------------------------------|
 
 </textarea>
-<pre id="out" onclick='clearHl();'>
-</pre>
-<pre id="hl">
-</pre>
-<div id="fretless_d">
-  <pre id="fretless" onmousemove='scrollRulers(event.pageX-this.offsetLeft, event.pageY-this.offsetTop);'>
-  </pre>
-  <input id="offset" type="number" min="1" max="16" step="1" value="1" onchange="off=parseInt(this.value);"/>
-  <div id="ruler_v"><hr style='top:2048px;background-color:transparent;'/></div>
-  <div id="ruler_h"><hr style='left:4096px;background-color:transparent;'/></div>
-</div>
+<pre id="out" onclick='clearHl();'></pre>
+<pre id="hl"></pre>
+<pre id="fretless"></pre>
 
 <script>
 var audioCtx = null;
@@ -224,14 +179,7 @@ var toolbar = document.getElementById("toolbar");
 var tab = document.getElementById("tab");
 var out = document.getElementById("out");
 var hl = document.getElementById("hl");
-var fretless_d = document.getElementById("fretless_d");
 var fretless = document.getElementById("fretless");
-var offset = document.getElementById("offset");
-var ruler_v = document.getElementById("ruler_v");
-var ruler_h = document.getElementById("ruler_h");
-var off = 1;
-var l = 578;
-var ar = 0.33;
 var piano = false;
 var printMode = false;
 
@@ -248,7 +196,7 @@ function changeTuning() {
         var id_ = (j.toString(2)+","+k.toString(2)).replace(/0/g, "o").replace(/1/g, "i");
         var r = new RegExp(k_, 'g');
         if (piano === false) {
-    	    n[i][j] = n[i][j].replace(r, s+"<b><span onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+map[j][k].toLowerCase().replace("#", "<sub>#</sub>")+"</span></b>");
+    	    n[i][j] = n[i][j].replace(r, s+"<b><span onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+map[j][k].toLowerCase().replace("#", "\u0301")+"</span></b>");
         } else {
           if (j>1) {
             var _k = k+1;
@@ -273,19 +221,6 @@ function changeTuning() {
   out.innerHTML = o;
 }
 
-function scrollRulers(x, y) {
-  ruler_v.scrollTo(0,2048-(l*ar+Math.log2(off)*l*ar)-y);
-  ruler_h.scrollTo(l+Math.log2(off)*l-x,0);
-}
-
-function countIntervals() {
-  for (var i=1; i<17; i++) {
-    ruler_v.innerHTML += "<hr style='top:"+(2048-(Math.log2(i)*l*ar+l*ar))+"px;'/>";
-    ruler_h.innerHTML += "<hr style='left:"+(Math.log2(i)*l+l)+"px;'/>";
-  }
-}
-countIntervals();
-
 function _highlight(t) {
   var r = new RegExp(' '+t+' ', 'gi');
   var h = "<span style='background-color:darkgray;'>_"+t+"_</span>";
@@ -307,15 +242,15 @@ clearHl();
 
 function switchFretboard(d) {
   if (d === true) {
-    fretless_d.style.display = "none";
+    fretless.style.display = "none";
     hl.style.display = "block";
     tab.style.display = "block";
   } else if (d === false) {
-    fretless_d.style.display = "block";
+    fretless.style.display = "block";
     hl.style.display = "none";
     tab.style.display = "none";
   } else {
-    fretless_d.style.display = "none";
+    fretless.style.display = "none";
     hl.style.display = "none";
     tab.style.display = "none";
   }
@@ -348,7 +283,7 @@ function copyMap() {
   if (hl.style.display != "none") {
     var el = hl;
   } else {
-    var el = fretless_d;
+    var el = fretless;
   }
   navigator.clipboard.writeText(el.innerText.replace(/·/g, "|").replace(/\| [abcdefg]/g, "|  "));
 }
