@@ -59,7 +59,10 @@ input, textarea {
   left: 0;
   bottom: 0;
 }
-b span {
+.h {
+  background-color:darkgray;
+}
+.note {
   display: inline-block;
   position: relative;
   top:3.2px;
@@ -125,15 +128,16 @@ function play(t) {
   if (!audioCtx) {
     setup();
   }
-  var t_ = t.split(",");
-  var s = parseInt(t_[0].replace(/o/g, "0").replace(/i/g, "1"), 2);
-  var f = parseInt(t_[1].replace(/o/g, "0").replace(/i/g, "1"), 2);
+  var t_ = parseBinary(t);
+  var s = t_[0];
+  var f = t_[1];
   oscillator[s].frequency.setValueAtTime(freq[s]*Math.pow(Math.pow(2,1/12), f), audioCtx.currentTime);
   gainNode[s].gain.setValueAtTime(0.25, audioCtx.currentTime+0.001);
 }
 
 function stop(t) {
-  var s = parseInt(t.split(",")[0].replace(/o/g, "0").replace(/i/g, "1"), 2);
+  var t_ = parseBinary(t);
+  var s = t_[0];
   gainNode[s].gain.setValueAtTime(0, audioCtx.currentTime+0.001);
 }
 
@@ -143,36 +147,36 @@ function stopAll() {
   }
 }
 
-var tuning =
-" c  · c# | d  | d# | e  | f  | f# | g  | g# | a  | a# | b  | c  |\n" +
-" g# · a  | a# | b  | c  | c# | d  | d# | e  | f  | f# | g  | g# |\n" +
-" e  · f  | f# | g  | g# | a  | a# | b  | c  | c# | d  | d# | e  |\n" +
-" C  · C# | D  | D# | e  | f  | f# | g  | g# | a  | a# | b  | c  |\n" +
-" G# · A  | A# | B  | C  | C# | D  | D# | e  | f  | f# | g  | g# |\n" +
-" E  · F  | F# | G  | G# | A  | A# | B  | C  | C# | D  | D# | e  |\n";
+var octave = [ '꜌', '꜋', '꜊', '꜉', '꜈', 'ᣟ𝍩', '꜑', '꜐', '꜏', '꜎', '꜍', '𝍩ᣟ' ]; //ᐧ ꜑꜐꜏꜎꜍
 
-var notes = ("C ,C#,D ,D#,E ,F ,F#,G ,G#,A ,A#,B ,c ,c#,d ,d#,e ,f ,f#,g ,g#,a ,a#,b ").split(",");
+var tuning =
+"5 ꜐ c  |꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# ꜏ a  ꜏ a# ꜏ b  ꜏ c  |\n" +
+"4 ꜐ g# |꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# |\n" +
+"3 ꜐ e  |꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  |\n" +
+"2 ꜑ C  |꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  |\n" +
+"1 ꜑ G# |꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# |\n" +
+"0 ꜑ E  |꜑ F  ꜑ F# ꜑ G  ꜑ G# ꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  |\n";
+
+var notes = ("꜑ C ,꜑ C#,꜑ D ,꜑ D#,꜐ E ,꜐ F ,꜐ F#,꜐ G ,꜐ G#,꜐ A ,꜐ A#,꜐ B ,꜐ c ,꜐ c#,꜐ d ,꜐ d#,꜏ e ,꜏ f ,꜏ f#,꜏ g ,꜏ g#,꜏ a ,꜏ a#,꜏ b ").split(",");
 var _tuning = "";
 var strings = 12;
 var fb = 12;
 for (var i=strings-1; i>=0; i--) {
+  _tuning += "<span id='f" + i + "'>";
   for (var j=0; j<fb; j++) {
-    _tuning += "| "+notes[i+j] + " ";
+    _tuning += " " + notes[i+j];
   }
-  _tuning += "|\n";
+  _tuning += " |</span>\n";
 }
 
 var map = [
-['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E'],
-['B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
-['G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G'],
-['D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D'],
-['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A'],
-['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E'],
+['꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D', '꜏ D#', '꜎ E', '꜎ F', '꜎ F#', '꜎ G', '꜎ G#', '꜎ A', '꜎ A#', '꜎ B', '꜎ C', '꜎ C#', '꜎ D', '꜎ D#', '꜍ E'],
+['꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D', '꜏ D#', '꜎ E', '꜎ F', '꜎ F#', '꜎ G', '꜎ G#', '꜎ A', '꜎ A#', '꜎ B'],
+['꜐ G', '꜐ G#', '꜐ A', '꜐ A#', '꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D', '꜏ D#', '꜎ E', '꜎ F', '꜎ F#', '꜎ G'],
+['꜑ D', '꜑ D#', '꜐ E', '꜐ F', '꜐ F#', '꜐ G', '꜐ G#', '꜐ A', '꜐ A#', '꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D'],
+['꜑ A', '꜑ A#', '꜑ B', '꜑ C', '꜑ C#', '꜑ D', '꜑ D#', '꜐ E', '꜐ F', '꜐ F#', '꜐ G', '꜐ G#', '꜐ A', '꜐ A#', '꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A'],
+['꜑ E', '꜑ F', '꜑ F#', '꜑ G', '꜑ G#', '꜑ A', '꜑ A#', '꜑ B', '꜑ C', '꜑ C#', '꜑ D', '꜑ D#', '꜐ E', '꜐ F', '꜐ F#', '꜐ G', '꜐ G#', '꜐ A', '꜐ A#', '꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E'],
 ];
-
-var tone = [ '꜌', '꜋', '꜊', '꜉', '꜈', 'ˊ', '꜑', '꜐', '꜏', '꜎', '꜍', '`' ];
-var tone_chart = [ '˩', '˨', '˧', '˦', '˥', '꜖', '꜕', '꜔', '꜓', '꜒' ];
 
 var printLink = document.getElementById("printLink");
 var toolbar = document.getElementById("toolbar");
@@ -193,10 +197,15 @@ function changeTuning() {
       for (var k=map[0].length-1; k>=0; k--) {
         var k_ = k;
         if (k>=10) {var s = "-";} else {var s = "";}
-        var id_ = (j.toString(2)+","+k.toString(2)).replace(/0/g, "o").replace(/1/g, "i");
+        var id_ = (j.toString(2)+","+k.toString(2)).replace(/0/g, "o").replace(/1/g, "l");
         var r = new RegExp(k_, 'g');
         if (piano === false) {
-    	    n[i][j] = n[i][j].replace(r, s+"<b><span onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+map[j][k].toLowerCase().replace("#", "\u0301")+"</span></b>");
+          if (map[j][k].length > 3) {
+            var note = "<i>" + map[j][k].slice(2,3) + "</i>";
+          } else {
+            var note = "<b>" + map[j][k].slice(2,3) + "</b>";
+          }
+    	    n[i][j] = n[i][j].replace(r, s+"<span class='note' onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+note.toLowerCase()+"</span>");
         } else {
           if (j>1) {
             var _k = k+1;
@@ -212,7 +221,7 @@ function changeTuning() {
           for (var p=0; p<_k; p++) {
             fret = "<sup>"+fret+"</sup>";
           }
-          n[i][j] = n[i][j].replace(r, s+"<b><span onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+fret+"</span></b>");
+          n[i][j] = n[i][j].replace(r, s+"<span class='note' onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+fret+"</span>");
         }
       }
     }
@@ -221,21 +230,25 @@ function changeTuning() {
   out.innerHTML = o;
 }
 
-function _highlight(t) {
-  var r = new RegExp(' '+t+' ', 'gi');
-  var h = "<span style='background-color:darkgray;'>_"+t+"_</span>";
-  fretless.innerHTML = fretless.innerHTML.replace(r, h);
+function parseBinary(t) {
+  var t_ = t.split(",");
+  t_[0] = parseInt(t_[0].replace(/o/g, "0").replace(/l/g, "1"), 2);
+  t_[1] = parseInt(t_[1].replace(/o/g, "0").replace(/l/g, "1"), 2);
+  return t_;
 }
 
 function highlight(t) {
-  _highlight(t);
-  var r = new RegExp(' '+t+' ', 'gi');
-  var h = "<span style='background-color:darkgray;'>_"+t+"_</span>";
-  hl.innerHTML = hl.innerHTML.replace(r, h);
+  if (hl.style.display != "none") {
+    var el = hl;
+  } else {
+    var el = fretless;
+  }
+  var r = new RegExp(t+' +', 'gi');
+  el.innerHTML = el.innerHTML.replace(r, function(x){return "<span class='h'>"+x.toLowerCase().replace(/ /g, "_")+"</span>";});
 }
 
 function clearHl() {
-  hl.innerHTML = tuning.toLowerCase();
+  hl.innerHTML = tuning.toLowerCase().replace(/\d/g, function(x){return "<span id='g"+x+"'>";}).replace(/\n/g, "</span>\n");
   fretless.innerHTML = _tuning.toLowerCase();
 }
 clearHl();
@@ -285,7 +298,7 @@ function copyMap() {
   } else {
     var el = fretless;
   }
-  navigator.clipboard.writeText(el.innerText.replace(/·/g, "|").replace(/\| [abcdefg]/g, "|  "));
+  navigator.clipboard.writeText(el.innerText.replace(/\ [abcdefg]/g, "  "));
 }
 
 function editTab(e) {
