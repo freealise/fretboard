@@ -485,6 +485,7 @@ function openTuning() {
       }
       audioContext = null;
       init(sampleRate.value);
+      openCsv.value = null;
     }, false);
   
     if (file && file.name.slice(-4) == ".csv") {
