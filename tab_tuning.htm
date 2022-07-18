@@ -3,15 +3,14 @@
 <head>
 <title>Display guitar tabs in simple tuning</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
 <style>
 @font-face {
   font-family: "DejaVu";
-  src: url("../phonetic/fonts/dejavu/DejaVuSansMono.ttf") format("truetype");
+  src: url("/verbalise/fonts/dejavu/DejaVuSansMono.ttf") format("truetype");
 }
 @font-face {
   font-family: "DejaVuBold";
-  src: url("../phonetic/fonts/dejavu/DejaVuSansMono-Bold.ttf") format("truetype");
+  src: url("/verbalise/fonts/dejavu/DejaVuSansMono-Bold.ttf") format("truetype");
 }
 body {
   margin:0;
@@ -21,8 +20,7 @@ body {
 * {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: 'Fira Code', monospace;
-  font-feature-settings: "onum", "ss01", "cv01", "cv02";
+  font-family: 'DejaVu', monospace;
   line-height:1em;
   color:#ffffff;
 }
@@ -44,7 +42,7 @@ input, textarea {
 }
 #hl {
   position:absolute;
-  left:0;
+  left:-1.2em;
   bottom:0;
 }
 #toolbar {
@@ -56,7 +54,7 @@ input, textarea {
   height:225px;
   font-size:16px;
   position:absolute;
-  left: 0;
+  left:-1.2em;
   bottom: 0;
 }
 .h {
@@ -150,12 +148,12 @@ function stopAll() {
 var octave = [ '꜌', '꜋', '꜊', '꜉', '꜈', 'ᣟ𝍩', '꜑', '꜐', '꜏', '꜎', '꜍', '𝍩ᣟ' ]; //ᐧ ꜑꜐꜏꜎꜍
 
 var tuning =
-"5 ꜐ c  |꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# ꜏ a  ꜏ a# ꜏ b  ꜏ c  |\n" +
-"4 ꜐ g# |꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# |\n" +
-"3 ꜐ e  |꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  |\n" +
-"2 ꜑ C  |꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  |\n" +
-"1 ꜑ G# |꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# |\n" +
-"0 ꜑ E  |꜑ F  ꜑ F# ꜑ G  ꜑ G# ꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  |\n";
+"5 ꜐ c   ꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# ꜏ a  ꜏ a# ꜏ b  ꜏ c  |\n" +
+"4 ꜐ g#  ꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# |\n" +
+"3 ꜐ e   ꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  ꜐ c# ꜐ d  ꜐ d# ꜏ e  |\n" +
+"2 ꜑ C   ꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# ꜐ a  ꜐ a# ꜐ b  ꜐ c  |\n" +
+"1 ꜑ G#  ꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  ꜐ f  ꜐ f# ꜐ g  ꜐ g# |\n" +
+"0 ꜑ E   ꜑ F  ꜑ F# ꜑ G  ꜑ G# ꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  |\n";
 
 var notes = ("꜑ C ,꜑ C#,꜑ D ,꜑ D#,꜐ E ,꜐ F ,꜐ F#,꜐ G ,꜐ G#,꜐ A ,꜐ A#,꜐ B ,꜐ c ,꜐ c#,꜐ d ,꜐ d#,꜏ e ,꜏ f ,꜏ f#,꜏ g ,꜏ g#,꜏ a ,꜏ a#,꜏ b ").split(",");
 var _tuning = "";
@@ -188,6 +186,7 @@ var piano = false;
 var printMode = false;
 
 function changeTuning() {
+  tab.value = tab.value.replace(/-/g, "—");
   var old = tab.value.trim().split("\n\n");
   var n = [];
   var o = "";
