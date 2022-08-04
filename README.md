@@ -13,6 +13,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 convolver (recorded)  
+pull tabs and chords from Ultimate Guitar ?  
 
 ## Emulator
 Synthesizer optimized for multitouch screen, lets you play the virtual fretboard like tapping the strings of a guitar.
