@@ -22,6 +22,6 @@ Written in Javascript using Web Audio API, works in modern browsers.
 
 ### TODO:
 MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html  
-touch radius -> volume / pan or AM chorus  
+touch radius x/y -> filter quality or amplitude modulation  
 
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
