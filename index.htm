@@ -178,7 +178,7 @@ audio {
 #notice {
   background-color:white;
   text-align:center;
-  width:256px;
+  width:258px;
   position:fixed;
   bottom:0;
   right:0;
@@ -187,9 +187,12 @@ audio {
 #close {
   float:right;
 }
+canvas {
+  border: 1px dashed lightgray;
+}
 </style>
 </head>
-<body oncontextmenu="return false;" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
+<body oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
   
   <div id="toolbar">
     <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>music_note</i></a>
@@ -217,11 +220,12 @@ audio {
     <a id="close" href="#" onclick="this.parentNode.style.display='none';"><i class="material-icons notranslate">close</i></a>
     <i>This app is optimized for touchscreen devices but supports MIDI, as well as mouse and keyboard.<br/>
       <i class="material-icons notranslate">touch_app</i> <i class="material-icons notranslate">piano</i> <i class="material-icons notranslate">ads_click</i> <i class="material-icons notranslate">keyboard</i><br/>
-    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser or <a href="https://freeali.se/connect.htm" target="_blank">report</a> it.<br/>~<br/>
+    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser or <a href="https://freeali.se/connect.htm" target="_blank">report</a> it.<br/>
+    <canvas id="visualizer" width="256" height="16"></canvas><br/>
     Inspired by <a href="http://www.falstad.com/dfilter/" target="_blank">Math and Physics Applets</a></i>
   </div>
   <script type="text/javascript" src="midi.js"></script>
-  
+  <script type="text/javascript" src="frequency-visualizer.js"></script>
 <script>
 var sampleRate = document.getElementById("sampleRate");
 var keys = document.getElementById("keys");
@@ -296,6 +300,7 @@ function init(r) {
   	  ac = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)({latencyHint:"interactive",sampleRate: r});
   	}
     document.getElementById("play").innerText = "task_alt";
+    var visualizer = new App.FrequencyVisualizer(ac, document.getElementById('visualizer'));
       
     var chunks = [];
     var dest = ac.createMediaStreamDestination();
@@ -345,6 +350,7 @@ function init(r) {
       gain[j] = ac.createGain();
       gain[j].gain.value = 0.0;
       gain[j].connect(ac.destination);
+      visualizer.acceptConnection(gain[j]);
       
       for (var i=0; i<2; i++) {
         convolver[j][i] = ac.createConvolver();
