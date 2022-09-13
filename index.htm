@@ -12,6 +12,22 @@
 <link href='https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&amp;display=swap' rel='stylesheet'/>
 <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'/>
 <style>
+@font-face {
+  font-family: "DejaVu";
+  src: url("/vocalise/fonts/dejavu/DejaVuSansMono.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DejaVuBold";
+  src: url("/vocalise/fonts/dejavu/DejaVuSansMono-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DejaVuSans";
+  src: url("/vocalise/fonts/dejavu/DejaVuSans.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DejaVuSansBold";
+  src: url("/vocalise/fonts/dejavu/DejaVuSans-Bold.ttf") format("truetype");
+}
 * {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -178,21 +194,58 @@ audio {
 #notice {
   background-color:white;
   text-align:center;
-  width:258px;
+  width:256px;
   position:fixed;
-  bottom:0;
-  right:0;
+  bottom:64px;
+  right:0px;
   padding:8px;
 }
 #close {
-  float:right;
+  color:white;
+  float:left;
+  margin-left: -32px;
+  margin-right: 0;
 }
-canvas {
+#hl {
+  position:absolute;
+  font-weight:bold;
+  z-index:-1;
+}
+#txt, #hl {
+  white-space:pre-wrap;
+  letter-spacing:0;
+  line-height:1em;
+  overflow:scroll;
+  font-family: 'DejaVu', monospace;
+  background-color:transparent;
+  font-size: 14px;
+  margin: 0px;
+  padding: 2px;
+  height: 64px;
+  width: 250px;
   border: 1px dashed lightgray;
+  resize: none;
+}
+#notice div {
+  width:256px;
+  overflow:scroll;
+}
+#notice ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+#notice li {
+  float:left;
+  width:48px;
+}
+#notice .n {
+  max-width:16px;
+  font-weight:bold;
 }
 </style>
 </head>
-<body oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
+<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
   
   <div id="toolbar">
     <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>music_note</i></a>
@@ -217,16 +270,36 @@ canvas {
   </div>
   <div id="keys"></div>
   <div id="notice">
-    <a id="close" href="#" onclick="this.parentNode.style.display='none';"><i class="material-icons notranslate">close</i></a>
+    <a id="close" href="#" onclick="showPopup();"><i class="material-icons notranslate">keyboard_double_arrow_right</i></a>
     <i>This app is optimized for touchscreen devices but supports MIDI, as well as mouse and keyboard.<br/>
       <i class="material-icons notranslate">touch_app</i> <i class="material-icons notranslate">piano</i> <i class="material-icons notranslate">ads_click</i> <i class="material-icons notranslate">keyboard</i><br/>
-    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser or <a href="https://freeali.se/connect.htm" target="_blank">report</a> it.<br/>
-    <canvas id="visualizer" width="256" height="16"></canvas><br/>
-    Inspired by <a href="http://www.falstad.com/dfilter/" target="_blank">Math and Physics Applets</a></i>
+    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser or <a href="https://freeali.se/connect.htm" target="_blank">report</a> it.</i>
+    <canvas id="canvas" width="256" height="16"></canvas>
+    <ul><li class="n">f:</li><li id="f_">_</li><li class="n">v:</li><li id="v_">_</li><li class="n">rx:</li><li id="rx_">_</li><li class="n">ry:</li><li id="ry_">_</li></ul>
+    <textarea id="hl"></textarea>
+    <textarea id="txt" onkeyup="highlight();hl.scrollTo(0,this.scrollTop);" onchange="parse(this.value);" onscroll="hl.scrollTo(0,this.scrollTop);">Math.sin(i * Math.PI / sampleRate.value * f) / (i + f) * f</textarea>
+    <div><canvas id="chart" width="8000" height="16"></canvas></div>
+    <i>Inspired by <a href="http://www.falstad.com/dfilter/" target="_blank">Math and Physics Applets</a></i>
   </div>
   <script type="text/javascript" src="midi.js"></script>
   <script type="text/javascript" src="frequency-visualizer.js"></script>
 <script>
+var canvas = document.getElementById("canvas");
+var chart = document.getElementById("chart");
+var ctx = chart.getContext("2d");
+ctx.fillStyle = '#ffffff';
+ctx.strokeStyle = 'lightgray';
+
+var notice = document.getElementById("notice");
+var close = document.getElementById("close");
+var txt = document.getElementById("txt");
+var hl = document.getElementById("hl");
+
+var f_ = document.getElementById("f_");
+var v_ = document.getElementById("v_");
+var rx_ = document.getElementById("rx_");
+var ry_ = document.getElementById("ry_");
+
 var sampleRate = document.getElementById("sampleRate");
 var keys = document.getElementById("keys");
 var tuners = document.getElementById("tuners");
@@ -247,11 +320,10 @@ for (var i=0; i<25; i++) {
     tuning_csv[i] = t[i].split(",");
   }
   keys.innerHTML += "<div class='key' id='"+i+"' style='background-position:0 "+(-i*64)+"px;' " +
-  "onmousemove='pitchShift(this.id, event.pageY-this.offsetTop, event.pageX-this.offsetLeft);' " +
-  "ontouchmove='pitchShift(this.id, event.changedTouches[0].pageY-this.offsetTop, event.changedTouches[0].pageX-this.offsetLeft);" +
-    "quality(this.id, event.changedTouches[0].radiusX, event.changedTouches[0].radiusY);' " +
-  "onmousedown='playNote(this.id, event.pageY-this.offsetTop, event.pageX-this.offsetLeft);' " +
-  "ontouchstart='playNote(this.id, event.changedTouches[0].pageY-this.offsetTop, event.changedTouches[0].pageX-this.offsetLeft);' " +
+  "onmousemove='pitchShift(this.id, event.pageY-this.offsetTop, event.pageX-this.offsetLeft, 16, 16);' " +
+  "ontouchmove='pitchShift(this.id, event.changedTouches[0].pageY-this.offsetTop, event.changedTouches[0].pageX-this.offsetLeft, event.changedTouches[0].radiusX, event.changedTouches[0].radiusY);' " +
+  "onmousedown='playNote(this.id, event.pageY-this.offsetTop, event.pageX-this.offsetLeft, 16, 16);' " +
+  "ontouchstart='playNote(this.id, event.changedTouches[0].pageY-this.offsetTop, event.changedTouches[0].pageX-this.offsetLeft, event.changedTouches[0].radiusX, event.changedTouches[0].radiusY);' " +
   "ontouchend='stopNote(this.id);' ontouchcancel='stopNote(this.id);' onmouseup='stopNote(this.id);' onmouseleave='stopNote(this.id);'></div>";
   tuners.innerHTML += "<div class='tuner'><select class='note' title='"+i+"' onchange='detuneNote(this.title, this.value);'></select><br/><input type='number' class='n' title='"+i+"' min='1' max='32' step='1' value='"+tuning_csv[i][1]+"' onchange='detune(this.title);' onclick='this.value=parseInt(this.value);'/>/<input type='number' class='d' title='"+i+"' min='1' max='32' step='1' value='"+tuning_csv[i][2]+"' onchange='detune(this.title);' onclick='this.value=parseInt(this.value);'/></div>";
   for (var j=0; j<49; j++) {
@@ -270,7 +342,7 @@ for (var i=0; i<25; i++) {
   }
 }
 
-var ac, noiseBuffer, left, right, source;
+var ac, noiseBuffer, left, right, source, out, res;
 var gain = new Array(25);
 var convolver = new Array(25);
 var gains = new Array(25);
@@ -300,7 +372,7 @@ function init(r) {
   	  ac = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)({latencyHint:"interactive",sampleRate: r});
   	}
     document.getElementById("play").innerText = "task_alt";
-    var visualizer = new App.FrequencyVisualizer(ac, document.getElementById('visualizer'));
+    var visualizer = new App.FrequencyVisualizer(ac, canvas);
       
     var chunks = [];
     var dest = ac.createMediaStreamDestination();
@@ -362,26 +434,49 @@ function init(r) {
         gains[j][i].connect(gain[j]);
       }
       
-      reverb(baseFreq*tuning[j], 0, j);
+      reverb(baseFreq*tuning[j], 1.0, 16, 16, 0, j);
     }
     source.start();
   }
 }
 
-function reverb(f, n, id) {
+function highlight() {
+  hl.value = txt.value.replace(/(\w+\.|[^\s\w]+)/g, function(x){ return x.replace(/./gi, " "); });
+}
+
+function parse(fn) {
+  out = new Function('i', 'f', 'v', 'rx', 'ry', 'return '+fn+';');
+  ctx.fillRect(0, 0, chart.width, chart.height);
+  ctx.beginPath();
+  
+  var i = -1;
+  var j = 8;
+  ctx.moveTo(i, j);
+  
+  for (i = 0; i < sampleRate.value; i++) {
+    res = out(i, baseFreq*12, 1.0, 16, 16);
+    j = 16-res*8-8;
+    ctx.lineTo(i, j);
+    ctx.moveTo(i, j);
+  }
+  ctx.stroke();
+}
+
+function reverb(f, v, rx, ry, n, id) {
   for (var i = 0; i < noiseBuffer.length; i++) {
-    left[i] = Math.sin(i * Math.PI / ac.sampleRate * f) / (i + f) * f;
-    right[i] = Math.sin(i * Math.PI / ac.sampleRate * f) / (i + f) * f;
+    res = out(i, f, v, rx, ry);
+    left[i] = res;
+    right[i] = res;
   }
   convolver[id][n].buffer = noiseBuffer;
   gains[id][n].gain.linearRampToValueAtTime(1.0, ac.currentTime + 0.03125);
   gains[id][1-n].gain.linearRampToValueAtTime(0.0, ac.currentTime + 0.03125);
 }
 
-function playNote(key, p, v) {
+function playNote(key, p, v, rx, ry) {
   if (gain[key]) {
     kd[key] = true;
-    pitchShift(key, p, v);
+    pitchShift(key, p, v, rx, ry);
   }
 }
 
@@ -392,38 +487,35 @@ function stopNote(key) {
   }
 }
 
-function pitchShift(key, f, v) {
+function pitchShift(key, f, v, rx, ry) {
   if (ac) {
     if (l === true) {
       f = baseFreq*2048/(2048-f) * 12;
     } else {
       f = baseFreq*Math.pow(2,f/64/12) * 12;
     }
+    v = volume(key, v);
     
     if (gains[key][0].gain.value == 0.0) {
-      reverb(f * tuning[key], 0, key);
+      reverb(f * tuning[key], v, rx, ry, 0, key);
     } else if (gains[key][1].gain.value == 0.0) {
-      reverb(f * tuning[key], 1, key);
+      reverb(f * tuning[key], v, rx, ry, 1, key);
     }
     
-    if (v) {
-      volume(key, v);
-    }
+    f_.innerText = parseInt(f * tuning[key]);
+    v_.innerText = v.toFixed(2);
+    rx_.innerText = rx.toFixed(2);
+    ry_.innerText = ry.toFixed(2);
   }
 }
 
 function volume(key, v) {
+  v = -Math.cos(v*Math.PI*2/64)/2+0.5;
+  
   if (gain[key] && kd[key] === true) {
-    v = -Math.cos(v*Math.PI*2/64)/2+0.5;
     gain[key].gain.linearRampToValueAtTime(v, ac.currentTime + 0.001);
   }
-}
-
-function quality(key, rx, ry) {
-  if (ac) {
-    //use for filter quality or amplitude modulation
-    //gain[key].gain.linearRampToValueAtTime(r*16, ac.currentTime + 0.001);
-  }
+  return v;
 }
 
 function scale() {
@@ -575,6 +667,16 @@ function getCookie(cname) {
     }
   }
   return "";
+}
+
+function showPopup() {
+  if (notice.style.right=='-264px') {
+    notice.style.right='0px';
+    close.getElementsByTagName('i')[0].innerText = 'keyboard_double_arrow_right';
+  } else {
+    notice.style.right='-264px';
+    close.getElementsByTagName('i')[0].innerText = 'keyboard_double_arrow_left';
+  }
 }
 
 
