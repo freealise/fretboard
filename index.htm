@@ -257,7 +257,7 @@ audio {
 }
 </style>
 </head>
-<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
+<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}" onscroll="window.frames['tab'].contentWindow.markers.scrollTo(window.scrollX,0);">
   <iframe name="tab" id="tab" src="tab_tuning.htm"></iframe>
   <div id="toolbar">
     <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tab" href="javascript:showTab();"><i id="tabs" class='material-icons notranslate'>music_note</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>tune</i></a>
