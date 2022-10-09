@@ -27,20 +27,26 @@ body {
 input, textarea {
   background-color:#000000;
 }
+input {
+  margin: 0 4px 0 0;
+  filter: grayscale(1);
+}
 #tab {
   letter-spacing: 0px;
   white-space: nowrap;
+  resize: none;
 }
-#tab, #out, #hl, #fretless {
+#tab, #out, #hl {
   margin:0;
   width:99%;
-  height:128px;
+  height:8em;
   overflow:scroll;
   font-size:16px;
   user-select:none;
   clear: both;
+  background-color:black;
 }
-#hl a, #fretless a {
+#hl a {
   color:transparent;
   border-left:1px solid gray;
   display: inline-block;
@@ -52,27 +58,33 @@ input, textarea {
   bottom:0;
 }
 #toolbar {
+  overflow:hidden;
+  margin:0.25em 0.5em;
+  white-space:pre;
   font-size:16px;
-  height:1.5em;
+  height:1.25em;
+  float:left;
+}
+#toolbar a {
+  text-decoration:none;
+  font-weight:bold;
 }
 #position {
   font-weight:bold;
   background-color:black;
 }
 #chord {
+  width:64px;
+  height:16px;
   font-weight:bold;
-}
-#fretless {
-  display:none;
-  height:225px;
-  font-size:16px;
-  position:absolute;
-  left:-1.2em;
-  bottom: 0;
+  background-color:transparent;
+  border:0;
+  margin:0;
+  padding:0;
 }
 .h {
   font-weight: bold;
-  background-color:gray;
+  background-color:#404040;
 }
 .note {
   display: inline-block;
@@ -81,6 +93,9 @@ input, textarea {
 }
 .piano {
   width:0;
+}
+.note u {
+  text-decoration:none;
 }
 sub {
   line-height:0;
@@ -93,11 +108,35 @@ sup {
   vertical-align:middle;
   line-height:0;
 }
+#notation {
+  background-color:black;
+  position:absolute;
+  bottom:0.75em;
+  left:1em;
+  padding-top:4px;
+  white-space: pre;
+}
+#notation a {
+  font-weight:bold;
+  text-decoration:none;
+}
+#markers {
+  background-color:black;
+  position:absolute;
+  bottom:0;
+  height:1em;
+  width:100%;
+  font-size:12px;
+}
+#markers span {
+  position:absolute;
+  bottom:2px;
+}
 </style>
 </head>
-<body oncontextmenu="return false;">
-<a id="printLink" href="#" onclick="if(printMode===false){printMode=true;}else{printMode=false;}printTab();">Save</a><span id="toolbar"> | <a href="#" onclick="copyMap();">Copy map</a> | <a href="#" onclick="if(piano===false){piano=true;}else{piano=false;}">Notation</a> | <a href="#" onclick="showTab();">Show tab</a> | Strings: <a href="#" onclick="switchFretboard(true);">6</a> <a href="#" onclick="switchFretboard(false);">12</a></span> <select id="position" onchange="copyMap();"></select> <span id="chord"></span>
-<textarea id="tab" onchange="changeTuning();" onkeypress="editTab(event);">
+<body oncontextmenu="return false;" onload="if(window.self!==window.top){switchFretboard(false);showNotes();addMarkers();}">
+<div id="toolbar"><a id="printLink" title="Save" href="#" onclick="if(printMode===false){printMode=true;}else{printMode=false;}printTab();">🖫</a> | <a href="#" title="Copy map" onclick="copyMap();">⧉</a> | <a href="#" title="Fullscreen" onclick="fullscreen();">⛶</a> | <label for="numbers">1</label><input title="Numbers" id="numbers" type="radio" name="mode" onclick="tuningMode(null);" checked/><label for="letters">a</label><input title="Letters" id="letters" type="radio" name="mode" onclick="tuningMode(false);"/><label for="piano">♩</label><input title="Piano" id="piano" type="radio" name="mode" onclick="tuningMode(true);"/>| <a href="#" title="Show original" onclick="showTab();">🗈</a> <a href="#" title="Show map" onclick="showFretboard();">⩩</a> <a href="#" title="Show notes" onclick="showNotes();">♫</a> <select id="position" onchange="copyMap();"></select> <input type="text" id="chord" onfocus="ctl=this;"/></div>
+<textarea id="tab" onchange="changeTuning();" onkeypress="editTab(event);changeTuning();" onfocus="ctl=this;">
   
 e|-------------------------------|-------------------------------|
 B|-------------------------------|-------------------------------|
@@ -116,9 +155,23 @@ E|-------------------------------|7------------------------------|
 </textarea>
 <pre id="out" onclick='clearHl();'></pre>
 <pre id="hl"></pre>
-<pre id="fretless"></pre>
+<div id="notation"></div>
+<div id="markers"></div>
 
 <script>
+var chord = document.getElementById("chord");
+var position = document.getElementById("position");
+var printLink = document.getElementById("printLink");
+var toolbar = document.getElementById("toolbar");
+var tab = document.getElementById("tab");
+var out = document.getElementById("out");
+var hl = document.getElementById("hl");
+var notation = document.getElementById("notation");
+var markers = document.getElementById("markers");
+var ctl = chord;
+var piano = null;
+var printMode = false;
+
 var audioCtx = null;
 var oscillator = [];
 var gainNode = [];
@@ -167,8 +220,22 @@ var barre = ("꜒꜓꜔꜕꜖˥˦˧˨˩").split("");
 
 var octave = [ '꜌', '꜑', '꜋', '꜐', '꜊', '꜏', '꜉', '꜎', '꜈', '꜍', 'ᣟ𝍩', '𝍩ᣟ' ]; //ᐧ
 var octave_ = new RegExp("("+octave.join("|")+")", 'g');
+var colors = [0,1,0,1,0,0,1,0,1,0,1,0,0];
 
-var chart = [ '˩', '˨', '˧', '˦', '˥', '꜖', '꜕', '꜔', '꜓', '꜒' ];
+for (var i=0; i<octave.length; i++) {
+  notation.innerHTML += "<a title='"+octave[i]+"' href='javascript:' onclick='addNote(this.title);' style='color:rgba(255,255,255,"+(colors[i]*0.5+0.5)+");'>"+octave[i]+"</a> ";
+}
+notation.innerHTML += " &nbsp; ";
+for (var i=0; i<barre.length; i++) {
+  notation.innerHTML += "<a title='"+barre[i]+"' href='javascript:' onclick='addNote(this.title);' style='color:rgba(255,255,255,0.5);'>"+barre[i]+"</a> ";
+}
+
+var num = ("𝟶 𝟷 𝟸 𝟹 𝟺 𝟻 𝟼 𝟽 𝟾 𝟿 𝟷𝟶 𝟷𝟷 𝟷𝟸 𝟷𝟹 𝟷𝟺 𝟷𝟻 𝟷𝟼 𝟷𝟽 𝟷𝟾 𝟷𝟿 𝟸𝟶 𝟸𝟷 𝟸𝟸 𝟸𝟹 𝟸𝟺").split(" ");
+
+var letters = ('a a_ b c c_ d d_ e f f_ g g_').split(' ');
+for (var i=0; i<12; i++) {
+  document.getElementsByTagName("style")[0].innerText += "." + letters[i] + " {color:hsl(" + (30*i) + ",100%,67%);} ";
+}
 
 var tuning = (
 "5 ꜐ c   ꜐ c# ꜐ d  ꜐ d# ꜏ e  ꜏ f  ꜏ f# ꜏ g  ꜏ g# ꜏ a  ꜏ a# ꜏ b  ꜏ c  |\n" +
@@ -179,18 +246,6 @@ var tuning = (
 "0 ꜑ E   ꜑ F  ꜑ F# ꜑ G  ꜑ G# ꜑ A  ꜑ A# ꜑ B  ꜑ C  ꜑ C# ꜑ D  ꜑ D# ꜐ e  |\n"
 ).replace(octave_, function(x) {return "<a>"+x+"</a>";} );
 
-var notes = ("꜑ C ,꜑ C#,꜑ D ,꜑ D#,꜐ E ,꜐ F ,꜐ F#,꜐ G ,꜐ G#,꜐ A ,꜐ A#,꜐ B ,꜐ c ,꜐ c#,꜐ d ,꜐ d#,꜏ e ,꜏ f ,꜏ f#,꜏ g ,꜏ g#,꜏ a ,꜏ a#,꜏ b ").split(",");
-var _tuning = "";
-var strings = 12;
-var fb = 12;
-for (var i=strings-1; i>=0; i--) {
-  _tuning += "<span id='f" + i + "'>";
-  for (var j=0; j<fb; j++) {
-    _tuning += " " + notes[i+j].replace(octave_, function(x){return "<a>"+x+"</a>";});
-  }
-  _tuning += " |</span>\n";
-}
-
 var map = [
 ['꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D', '꜏ D#', '꜎ E', '꜎ F', '꜎ F#', '꜎ G', '꜎ G#', '꜎ A', '꜎ A#', '꜎ B', '꜎ C', '꜎ C#', '꜎ D', '꜎ D#', '꜍ E'],
 ['꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E', '꜏ F', '꜏ F#', '꜏ G', '꜏ G#', '꜏ A', '꜏ A#', '꜏ B', '꜏ C', '꜏ C#', '꜏ D', '꜏ D#', '꜎ E', '꜎ F', '꜎ F#', '꜎ G', '꜎ G#', '꜎ A', '꜎ A#', '꜎ B'],
@@ -200,19 +255,18 @@ var map = [
 ['꜑ E', '꜑ F', '꜑ F#', '꜑ G', '꜑ G#', '꜑ A', '꜑ A#', '꜑ B', '꜑ C', '꜑ C#', '꜑ D', '꜑ D#', '꜐ E', '꜐ F', '꜐ F#', '꜐ G', '꜐ G#', '꜐ A', '꜐ A#', '꜐ B', '꜐ C', '꜐ C#', '꜐ D', '꜐ D#', '꜏ E'],
 ];
 
-var chord = document.getElementById("chord");
-var position = document.getElementById("position");
-var printLink = document.getElementById("printLink");
-var toolbar = document.getElementById("toolbar");
-var tab = document.getElementById("tab");
-var out = document.getElementById("out");
-var hl = document.getElementById("hl");
-var fretless = document.getElementById("fretless");
-var piano = false;
-var printMode = false;
+for (var i=0; i<5; i++) {
+  for (var j=0; j<4; j++) {
+    position.innerHTML += "<option>" + barre[i] + " " + barre[5+j] + "</option>";
+  }
+}
 
-for (var i=0; i<25; i++) {
-  position.innerHTML += "<option>" + barre[parseInt(i/5)] + " " + barre[5+i-parseInt(i/5)*5] + "</option>";
+function addMarkers() {
+  for (var i=0; i<12; i++) {
+    var m = i+5;
+    if (m >= 12) { m -= 12; }
+    markers.innerHTML += "<span class='"+letters[m]+"' style='left:"+(28+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span><span class='"+letters[m]+"' style='left:"+(796+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span>";
+  }
 }
 
 function changeTuning() {
@@ -230,12 +284,12 @@ function changeTuning() {
         var r = new RegExp(k_, 'g');
         if (piano === false) {
           if (map[j][k].length > 3) {
-            var note = "<i>" + map[j][k].slice(2,3) + "</i>";
+            var note = "<i class='"+map[j][k].slice(2).replace("#","_")+"'>" + map[j][k].slice(2,3) + "</i>";
           } else {
-            var note = "<b>" + map[j][k].slice(2,3) + "</b>";
+            var note = "<b class='"+map[j][k].slice(2)+"'>" + map[j][k].slice(2,3) + "</b>";
           }
     	    n[i][j] = n[i][j].replace(r, s+"<span class='note' onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+note.toLowerCase()+"</span>");
-        } else {
+        } else if (piano === true) {
           if (j>1) {
             var _k = k+1;
           } else {
@@ -246,12 +300,15 @@ function changeTuning() {
               n[i][j] = "c" + n[i][j].slice(1);
             }
           }
-          var fret = "<b>·</b>";
+          var fret = "<b class='"+map[j][k].slice(2).replace("#","_").toLowerCase()+"'>·</b>";
           for (var p=0; p<_k; p++) {
             fret = "<sup>"+fret+"</sup>";
           }
           s += "—";
           n[i][j] = n[i][j].replace(r, "<span class='note piano' onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+fret+"</span>"+s);
+        } else if (piano === null) {
+          var fret = "<u class='"+map[j][k].slice(2).replace("#","_").toLowerCase()+"'>"+num[k]+"</u>";
+          n[i][j] = n[i][j].replace(r, function(x){ return "<span class='note' onfocus='highlight(this.title);play(this.id);' onmouseover='highlight(this.title);play(this.id);' ontouchstart='highlight(this.title);play(this.id);' onblur='stop(this.id);' onmouseout='stop(this.id);' ontouchend='stop(this.id);' ontouchcancel='stop(this.id);' id='"+id_+"' title='"+map[j][k]+"'>"+fret+"</span>"; });
         }
       }
     }
@@ -268,34 +325,28 @@ function parseBinary(t) {
 }
 
 function highlight(t) {
-  if (hl.style.display != "none") {
-    var el = hl;
-  } else {
-    var el = fretless;
-  }
   var r = new RegExp('<a>'+t.slice(0,1)+'</a>'+t.slice(1)+' +', 'gi');
-  el.innerHTML = el.innerHTML.replace(r, function(x){return "<span class='h'>"+x.toLowerCase().replace(/ /g, "_")+"</span>";});
+  hl.innerHTML = hl.innerHTML.replace(r, function(x){return "<span class='h "+x.toLowerCase().slice(9,11).trim().replace("#","_")+"'>"+x.toLowerCase().replace(/ /g, "_")+"</span>";});
 }
 
 function clearHl() {
   hl.innerHTML = tuning.toLowerCase().replace(/\d/g, function(x){return "<span id='g"+x+"'>";}).replace(/\n/g, "</span>\n");
-  fretless.innerHTML = _tuning.toLowerCase();
 }
 clearHl();
 
+function showFretboard() {
+  if (hl.style.display == "none") {
+    switchFretboard(true);
+  } else {
+    switchFretboard(false);
+  }
+}
+
 function switchFretboard(d) {
   if (d === true) {
-    fretless.style.display = "none";
     hl.style.display = "block";
-    tab.style.display = "block";
   } else if (d === false) {
-    fretless.style.display = "block";
     hl.style.display = "none";
-    tab.style.display = "none";
-  } else {
-    fretless.style.display = "none";
-    hl.style.display = "none";
-    tab.style.display = "none";
   }
 }
 
@@ -309,31 +360,28 @@ function showTab() {
 
 function printTab() {
   if (printMode === true) {
-    toolbar.style.display = "none";
+    toolbar.style.width = "2em";
+    notation.style.display = "none";
     out.style.overflow = "visible";
-    switchFretboard(null);
+    tab.style.display = "none";
+    switchFretboard(false);
+    markers.style.display = "none";
     printLink.innerText = "[x]";
     window.print();
   } else {
-    toolbar.style.display = "inline-block";
+    toolbar.style.width = "auto";
+    notation.style.display = "auto";
     out.style.overflow = "scroll";
+    tab.style.display = "block";
     switchFretboard(true);
-    printLink.innerText = "Save or print";
+    markers.style.display = "block";
+    printLink.innerText = "🖫";
   }
 }
 
 function copyMap() {
-  if (hl.style.display != "none") {
-    var el = hl;
-  } else {
-    var el = fretless;
-  }
-  var cb = el.innerText.replace(octave_, "").replace(/\|/g, "").replace(/_[abcdefg]/g, "__").replace(/[#_]_/g, "__").replace(/[abcdefg# ]/g, " ");
-  if (el == hl) {
-    cb = cb.slice(2,-1).replace(/\n../g, "\n").replace(/____/g, "0").replace(/    /g, "-");
-  } else {
-    cb = cb.slice(1,-1).replace(/\n./g, "\n").replace(/____/g, "0").replace(/    /g, "-");
-  }
+  var cb = hl.innerText.replace(octave_, "").replace(/\|/g, "").replace(/_[abcdefg]/g, "__").replace(/[#_]_/g, "__").replace(/[abcdefg# ]/g, " ");
+  cb = cb.slice(2,-1).replace(/\n../g, "\n").replace(/____/g, "0").replace(/    /g, "-");
   navigator.clipboard.writeText(cb);
   var cb = cb.split("\n");
   var chord_ = [];
@@ -347,7 +395,7 @@ function copyMap() {
       }
     }
   }
-  chord.innerText = chord_.reverse().join("");
+  chord.value = chord_.reverse().join("");
 }
 
 function editTab(e) {
@@ -357,6 +405,40 @@ function editTab(e) {
     var d = tab.selectionEnd;
     tab.value = tab.value.substr(0,b) + e.key + tab.value.substr(d+1);
     tab.setSelectionRange(b+1, d+1);
+  }
+}
+
+function addNote(nt) {
+  var b = ctl.selectionStart;
+  var d = ctl.selectionEnd;
+  ctl.value = ctl.value.substr(0,b) + nt + ctl.value.substr(d);
+  ctl.setSelectionRange(b+nt.length, d+nt.length);
+  ctl.focus();
+}
+
+function fullscreen() {
+  if (window.parent.document.getElementById('tab').style.height != '100%') {
+    window.parent.document.getElementById('tab').style.height = '100%';
+    markers.style.display = "none";
+    switchFretboard(true);
+  } else {
+    window.parent.document.getElementById('tab').style.height = '12em';
+    markers.style.display = "block";
+    switchFretboard(false);
+  }
+}
+
+function tuningMode(m) {
+  piano = m;
+  changeTuning();
+  tab.style.display = "none";
+}
+
+function showNotes() {
+  if (notation.style.display == "none") {
+    notation.style.display = "block";
+  } else {
+    notation.style.display = "none";
   }
 }
 
