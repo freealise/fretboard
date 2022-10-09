@@ -131,6 +131,7 @@ sup {
   bottom:0;
   height:1em;
   width:100%;
+  overflow:hidden;
   font-size:12px;
 }
 #markers span {
@@ -267,11 +268,16 @@ for (var i=0; i<5; i++) {
 }
 
 function addMarkers() {
-  for (var i=0; i<12; i++) {
-    var m = i+5;
-    if (m >= 12) { m -= 12; }
-    markers.innerHTML += "<span class='"+letters[m]+"' style='left:"+(28+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span><span class='"+letters[m]+"' style='left:"+(796+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span>";
+  var offset = 28;
+  for (var j=0; j<2; j++) {
+    if (j == 1) { offset = 796; }
+    for (var i=0; i<12; i++) {
+      var m = i+5;
+      if (m >= 12) { m -= 12; }
+      markers.innerHTML += "<span class='"+letters[m]+"' style='left:"+(offset+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span>";
+    }
   }
+  markers.innerHTML += "<span class='"+letters[5]+"' style='left:1564px;'>" + letters[5].replace("_", "#") + "</span><span style='left:1600px;'>`</span>";
 }
 
 function changeTuning() {
