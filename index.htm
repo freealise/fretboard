@@ -243,13 +243,24 @@ audio {
   max-width:16px;
   font-weight:bold;
 }
+#tab {
+  display:none;
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:12em;
+  border:0;
+  margin:0;
+  padding:0;
+  z-index:1;
+}
 </style>
 </head>
 <body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}">
-  
+  <iframe name="tab" id="tab" src="tab_tuning.htm"></iframe>
   <div id="toolbar">
-    <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>music_note</i></a>
-    <select title="MIDI input" id="midiIn" onchange="selectMIDIIn(event);"></select>
+    <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tab" href="javascript:showTab();"><i id="tabs" class='material-icons notranslate'>music_note</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>tune</i></a>
     <select title="Sample rate" id="sampleRate" onchange="ac=null;init(this.value);">
       <option value="8000" selected="true">8000</option>
       <option value="11025">11025</option>
@@ -259,6 +270,7 @@ audio {
       <option value="48000">48000</option>
       <option value="96000">96000</option>
     </select>
+    <select title="MIDI input" id="midiIn" onchange="selectMIDIIn(event);"></select>
   </div>
   <div id="tuners">
     <input id="offset" type="number" min="1" max="16" step="1" value="1" onchange="off=parseInt(this.value);"/>
@@ -290,6 +302,7 @@ var ctx = chart.getContext("2d");
 ctx.fillStyle = '#ffffff';
 ctx.strokeStyle = 'lightgray';
 
+var tab = document.getElementById("tab");
 var notice = document.getElementById("notice");
 var close = document.getElementById("close");
 var txt = document.getElementById("txt");
@@ -598,10 +611,10 @@ function detuneNote(key, v) {
 function showTuning() {
   if (tuners.style.display != 'block') {
     tuners.style.display = 'block';
-    document.getElementById("tune").innerText = "music_off";
+    document.getElementById("tune").innerText = "format_list_numbered";
   } else {
     tuners.style.display = 'none';
-    document.getElementById("tune").innerText = "music_note";
+    document.getElementById("tune").innerText = "tune";
   }
 }
 
@@ -676,6 +689,16 @@ function showPopup() {
   } else {
     notice.style.right='-264px';
     close.getElementsByTagName('i')[0].innerText = 'keyboard_double_arrow_left';
+  }
+}
+
+function showTab() {
+  if (tab.style.display != 'block') {
+    tab.style.display = 'block';
+    document.getElementById("tabs").innerText = "music_off";
+  } else {
+    tab.style.display = 'none';
+    document.getElementById("tabs").innerText = "music_note";
   }
 }
 
