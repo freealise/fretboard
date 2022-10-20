@@ -257,7 +257,7 @@ audio {
 }
 </style>
 </head>
-<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}" onscroll="window.frames['tab'].contentWindow.markers.scrollTo(window.scrollX,0);">
+<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}" onscroll="window.frames['tab'].contentWindow.markers.scrollTo(window.scrollX,0);" onwheel="setAmp(event);">
   <iframe name="tab" id="tab" src="tab_tuning.htm"></iframe>
   <div id="toolbar">
     <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tab" href="javascript:showTab();"><i id="tabs" class='material-icons notranslate'>music_note</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>tune</i></a>
@@ -355,7 +355,7 @@ for (var i=0; i<25; i++) {
   }
 }
 
-var ac, noiseBuffer, left, right, source, out, res;
+var ac, noiseBuffer, left, right, source, out, res, masterGain;
 var gain = new Array(25);
 var convolver = new Array(25);
 var gains = new Array(25);
@@ -376,6 +376,7 @@ var l = false;
 var mediaRecorder = null;
 var recording = false;
 var baseFreq = 110;
+var amp = 1.0;
 
 function init(r) {
   if (!ac) {
@@ -431,11 +432,15 @@ function init(r) {
     left = noiseBuffer.getChannelData(0);
     right = noiseBuffer.getChannelData(1);
     
+    masterGain = ac.createGain();
+    masterGain.gain.value = 1.0;
+    masterGain.connect(ac.destination);
+    visualizer.acceptConnection(masterGain);
+    
     for (var j=0; j<25; j++) {
       gain[j] = ac.createGain();
       gain[j].gain.value = 0.0;
-      gain[j].connect(ac.destination);
-      visualizer.acceptConnection(gain[j]);
+      gain[j].connect(masterGain);
       
       for (var i=0; i<2; i++) {
         convolver[j][i] = ac.createConvolver();
@@ -529,6 +534,17 @@ function volume(key, v) {
     gain[key].gain.linearRampToValueAtTime(v, ac.currentTime + 0.001);
   }
   return v;
+}
+
+function setAmp(event) {
+  event.preventDefault();
+  amp += event.deltaY * -0.001;
+  // Restrict scale
+  amp = Math.min(Math.max(0.0039, amp), 1);
+  if (masterGain) {
+    masterGain.gain.linearRampToValueAtTime(amp, ac.currentTime + 0.001);
+  }
+  //console.log(amp);
 }
 
 function scale() {
