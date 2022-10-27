@@ -15,6 +15,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 convolver (recorded)  
 pull tabs and chords from Ultimate Guitar ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics  
+bamboo wood sources  
 
 ## Emulator
 Synthesizer optimized for multitouch screen, lets you play the virtual fretboard like tapping the strings of a guitar.
