@@ -125,23 +125,10 @@ sup {
   font-weight:bold;
   text-decoration:none;
 }
-#markers {
-  background-color:black;
-  position:absolute;
-  bottom:0;
-  height:1em;
-  width:100%;
-  overflow:hidden;
-  font-size:12px;
-}
-#markers span {
-  position:absolute;
-  bottom:2px;
-}
 </style>
 </head>
-<body oncontextmenu="return false;" onload="if(window.self!==window.top){switchFretboard(false);showNotes();addMarkers();}">
-<div id="toolbar"><a id="printLink" title="Save" href="#" onclick="if(printMode===false){printMode=true;}else{printMode=false;}printTab();">🖫</a> | <a href="#" title="Fullscreen" onclick="fullscreen();">⛶</a> | <label for="numbers">1</label><input title="Numbers" id="numbers" type="radio" name="mode" onclick="tuningMode(null);" checked/><label for="letters">a</label><input title="Letters" id="letters" type="radio" name="mode" onclick="tuningMode(false);"/><label for="piano">♩</label><input title="Piano" id="piano" type="radio" name="mode" onclick="tuningMode(true);"/>| <a href="#" title="Show original" onclick="showTab();">🗈</a> <a href="#" title="Show map" onclick="showFretboard();">⩩</a> <a href="#" title="Show notes" onclick="showNotes();">♫</a> <select title="Chord position" id="position" onchange="makeChord();"></select><input type="text" id="chord" onfocus="ctl=this;"/> <a href="#" title="Copy chord" onclick="copyChord();">⧉</a></div>
+<body oncontextmenu="return false;" onload="if(window.self!==window.top){switchFretboard(false);showNotes();}">
+<div id="toolbar"><a id="printLink" title="Save" href="#" onclick="if(printMode===false){printMode=true;}else{printMode=false;}printTab();">🖫</a> | <label for="numbers">1</label><input title="Numbers" id="numbers" type="radio" name="mode" onclick="tuningMode(null);" checked/><label for="letters">a</label><input title="Letters" id="letters" type="radio" name="mode" onclick="tuningMode(false);"/><label for="piano">♩</label><input title="Piano" id="piano" type="radio" name="mode" onclick="tuningMode(true);"/>| <a href="#" title="Show original" onclick="showTab();">🗈</a> <a href="#" title="Show map" onclick="showFretboard();">⩩</a> <a href="#" title="Show notes" onclick="showNotes();">♫</a> <select title="Chord position" id="position" onchange="makeChord();"></select><input type="text" id="chord" onfocus="ctl=this;"/> <a href="#" title="Copy chord" onclick="copyChord();">⧉</a></div>
 <textarea id="tab" onchange="changeTuning();" onkeypress="editTab(event);changeTuning();" onfocus="ctl=this;">
   
 e|-------------------------------|-------------------------------|
@@ -162,7 +149,6 @@ E|-------------------------------|7------------------------------|
 <pre id="out" onclick='clearHl();'></pre>
 <pre id="hl"></pre>
 <div id="notation"></div>
-<div id="markers"></div>
 
 <script>
 var chord = document.getElementById("chord");
@@ -173,7 +159,6 @@ var tab = document.getElementById("tab");
 var out = document.getElementById("out");
 var hl = document.getElementById("hl");
 var notation = document.getElementById("notation");
-var markers = document.getElementById("markers");
 var ctl = chord;
 var piano = null;
 var printMode = false;
@@ -265,19 +250,6 @@ for (var i=0; i<5; i++) {
   for (var j=0; j<4; j++) {
     position.innerHTML += "<option>" + barre[i] + " " + barre[5+j] + "</option>";
   }
-}
-
-function addMarkers() {
-  var offset = 28;
-  for (var j=0; j<2; j++) {
-    if (j == 1) { offset = 796; }
-    for (var i=0; i<12; i++) {
-      var m = i+5;
-      if (m >= 12) { m -= 12; }
-      markers.innerHTML += "<span class='"+letters[m]+"' style='left:"+(offset+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span>";
-    }
-  }
-  markers.innerHTML += "<span class='"+letters[5]+"' style='left:1564px;'>" + letters[5].replace("_", "#") + "</span><span style='left:1600px;'>`</span>";
 }
 
 function changeTuning() {
@@ -376,7 +348,6 @@ function printTab() {
     out.style.overflow = "visible";
     tab.style.display = "none";
     switchFretboard(false);
-    markers.style.display = "none";
     printLink.innerText = "[x]";
     window.print();
   } else {
@@ -385,7 +356,6 @@ function printTab() {
     out.style.overflow = "scroll";
     tab.style.display = "block";
     switchFretboard(true);
-    markers.style.display = "block";
     printLink.innerText = "🖫";
   }
 }
@@ -428,18 +398,6 @@ function addNote(nt) {
   ctl.value = ctl.value.substr(0,b) + nt + ctl.value.substr(d);
   ctl.setSelectionRange(b+nt.length, d+nt.length);
   ctl.focus();
-}
-
-function fullscreen() {
-  if (window.parent.document.getElementById('tab').style.height != '100%') {
-    window.parent.document.getElementById('tab').style.height = '100%';
-    markers.style.display = "none";
-    switchFretboard(true);
-  } else {
-    window.parent.document.getElementById('tab').style.height = '12em';
-    markers.style.display = "block";
-    switchFretboard(false);
-  }
 }
 
 function tuningMode(m) {
