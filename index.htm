@@ -222,9 +222,20 @@ audio {
   margin: 0px;
   padding: 2px;
   height: 64px;
-  width: 250px;
+  width: 256px;
   border: 1px dashed lightgray;
   resize: none;
+}
+#switch_n {
+  font-size:48px;
+  height:64px;
+  width: 0px;
+  position: absolute;
+  right:0;
+  border:0;
+  padding:0 24px 0 0;
+  margin:0;
+  background-color:transparent;
 }
 #notice div {
   width:256px;
@@ -243,24 +254,20 @@ audio {
   max-width:16px;
   font-weight:bold;
 }
-#tab {
-  display:none;
-  position:fixed;
-  left:0;
-  top:0;
-  width:100%;
-  height:12em;
-  border:0;
-  margin:0;
-  padding:0;
-  z-index:1;
+#markers {
+  height:1.5em;
+  width:1600px;
+  font-size:12px;
+}
+#markers span {
+  position:absolute;
 }
 </style>
 </head>
-<body onload="parse(txt.value);highlight();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}" onscroll="window.frames['tab'].contentWindow.markers.scrollTo(window.scrollX,0);" onwheel="setAmp(event);">
-  <iframe name="tab" id="tab" src="tab_tuning.htm"></iframe>
+<body onload="newEq();parse();highlight();addMarkers();" oncontextmenu="return false;" ondragstart="event.preventDefault();" onkeydown="if(kbrd[event.key]){playNote(kbrd[event.key][0], kbrd[event.key][1]*64, 32.0, 16, 16);}" onkeyup="if(kbrd[event.key]){stopNote(kbrd[event.key][0]);}" onwheel="setAmp(event);">
+  <div id="markers"></div>
   <div id="toolbar">
-    <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tab" href="javascript:showTab();"><i id="tabs" class='material-icons notranslate'>music_note</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>tune</i></a>
+    <a title="On / Off" href="javascript:init(sampleRate.value);"><i id='play' class='material-icons notranslate'>power_settings_new</i></a><a title="Scale" href="javascript:if(l===false){l=true;}else{l=false;}scale();"><i id='scale' class='material-icons notranslate'>line_weight</i></a><audio controls></audio><a title="Record" href="javascript:record();"><i id='rec' class='material-icons notranslate'>fiber_manual_record</i></a><a title="Tuning" href="javascript:showTuning();"><i id="tune" class='material-icons notranslate'>tune</i></a>
     <select title="Sample rate" id="sampleRate" onchange="ac=null;init(this.value);">
       <option value="8000" selected="true">8000</option>
       <option value="11025">11025</option>
@@ -283,15 +290,14 @@ audio {
   <div id="keys"></div>
   <div id="notice">
     <a id="close" href="#" onclick="showPopup();"><i class="material-icons notranslate">keyboard_double_arrow_right</i></a>
-    <i>This app is optimized for touchscreen devices but supports MIDI, as well as mouse and keyboard.<br/>
+    <i>Optimized for touchscreen devices but supports MIDI, mouse and keyboard.<br/>
       <i class="material-icons notranslate">touch_app</i> <i class="material-icons notranslate">piano</i> <i class="material-icons notranslate">ads_click</i> <i class="material-icons notranslate">keyboard</i><br/>
-    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser or <a href="https://freeali.se/connect.htm" target="_blank">report</a> it.</i>
+    If anything is broken, please <a href="https://browsehappy.com/" target="_blank">update</a> your browser and <a href="https://freeali.se/contact.htm" target="_blank">report</a> it.</i>
     <canvas id="canvas" width="256" height="16"></canvas>
     <ul><li class="n">f:</li><li id="f_">_</li><li class="n">v:</li><li id="v_">_</li><li class="n">rx:</li><li id="rx_">_</li><li class="n">ry:</li><li id="ry_">_</li></ul>
     <textarea id="hl"></textarea>
-    <textarea id="txt" onkeyup="highlight();hl.scrollTo(0,this.scrollTop);" onchange="parse(this.value);" onscroll="hl.scrollTo(0,this.scrollTop);">Math.sin(i * Math.PI / sampleRate.value * f) / (i + f) * f</textarea>
-    <div><canvas id="chart" width="8000" height="16"></canvas></div>
-    <i>Inspired by <a href="http://www.falstad.com/dfilter/" target="_blank">Math and Physics Applets</a></i>
+    <textarea id="txt" onkeyup="highlight();hl.scrollTo(0,this.scrollTop);" onchange="newEq();parse();note_n=0;switch_n.focus();" onscroll="hl.scrollTo(0,this.scrollTop);">Math.sin(y)/(x+1)</textarea>
+    <div><canvas id="chart" width="256" height="64" onclick="switch_n.focus();"></canvas><input type="number" id="switch_n" max="0" min="-19200" onchange="switchNote(this.value);"></div>
   </div>
   <script type="text/javascript" src="midi.js"></script>
   <script type="text/javascript" src="frequency-visualizer.js"></script>
@@ -302,11 +308,12 @@ var ctx = chart.getContext("2d");
 ctx.fillStyle = '#ffffff';
 ctx.strokeStyle = 'lightgray';
 
-var tab = document.getElementById("tab");
+var markers = document.getElementById("markers");
 var notice = document.getElementById("notice");
 var close = document.getElementById("close");
 var txt = document.getElementById("txt");
 var hl = document.getElementById("hl");
+var switch_n = document.getElementById("switch_n");
 
 var f_ = document.getElementById("f_");
 var v_ = document.getElementById("v_");
@@ -318,7 +325,13 @@ var keys = document.getElementById("keys");
 var tuners = document.getElementById("tuners");
 var csv = document.getElementById("csv");
 var openCsv = document.getElementById("openCsv");
+
 var notes = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b", "c"];
+var letters = ('a a_ b c c_ d d_ e f f_ g g_').split(' ');
+for (var i=0; i<12; i++) {
+  document.getElementsByTagName("style")[0].innerText += "." + letters[i] + " {color:hsl(" + (30*i) + ",100%,67%);} ";
+}
+
 var tuning_csv = new Array(25);
 var t = getCookie("tuning");
 if (t != "") {
@@ -355,15 +368,25 @@ for (var i=0; i<25; i++) {
   }
 }
 
-var ac, noiseBuffer, left, right, source, out, res, masterGain;
+var ac, masterGain, wave;
+var harmonics = new Array(2);
+harmonics[0] = new Array(64);
+harmonics[1] = new Array(64);
+var w = 0;
+var note_n = 0;
+var chunks = [];
+var frame = 0;
+var real = new Array(2048);
+var imag = new Array(2048);
 var gain = new Array(25);
-var convolver = new Array(25);
+var osc = new Array(25);
 var gains = new Array(25);
 
 for (var i=0; i<25; i++) {
-  convolver[i] = new Array(2);
+  osc[i] = new Array(2);
   gains[i] = new Array(2);
 }
+var iv = new Array(25);
 
 var tuning = new Array(25);
 for (var i=0; i<25; i++) {
@@ -387,8 +410,7 @@ function init(r) {
   	}
     document.getElementById("play").innerText = "task_alt";
     var visualizer = new App.FrequencyVisualizer(ac, canvas);
-      
-    var chunks = [];
+    
     var dest = ac.createMediaStreamDestination();
     mediaRecorder = new MediaRecorder(dest.stream);
       
@@ -401,40 +423,13 @@ function init(r) {
       // Make blob out of our blobs, and open it.
       var blob = new Blob(chunks, { 'type' : 'audio/wav' });
       document.querySelector("audio").src = URL.createObjectURL(blob);
+      chunks = [];
     };
-    
-    // Create an empty stereo buffer at the sample rate of the AudioContext
-    var myArrayBuffer = ac.createBuffer(2, ac.sampleRate * 1.0, ac.sampleRate);
-          
-    // Fill the buffer with white noise;
-    //just random values between -1.0 and 1.0
-    for (var channel = 0; channel < myArrayBuffer.numberOfChannels; channel++) {
-      // This gives us the actual ArrayBuffer that contains the data
-      var nowBuffering = myArrayBuffer.getChannelData(channel);
-      for (var i = 0; i < myArrayBuffer.length; i++) {
-        // Math.random() is in [0; 1.0]
-        // audio needs to be in [-1.0; 1.0]
-        nowBuffering[i] = Math.random() - 0.5;
-      }
-    }
-          
-    // Get an AudioBufferSourceNode.
-    // This is the AudioNode to use when we want to play an AudioBuffer
-    source = ac.createBufferSource();
-    // set the buffer in the AudioBufferSourceNode
-    source.buffer = myArrayBuffer;
-    // connect the AudioBufferSourceNode to the
-    // destination so we can hear the sound
-    source.playbackRate.value = 1.0;    //pitch
-    source.loop = true;
-    
-    noiseBuffer = ac.createBuffer(2, ac.sampleRate, ac.sampleRate);
-    left = noiseBuffer.getChannelData(0);
-    right = noiseBuffer.getChannelData(1);
     
     masterGain = ac.createGain();
     masterGain.gain.value = 1.0;
     masterGain.connect(ac.destination);
+    masterGain.connect(dest);
     visualizer.acceptConnection(masterGain);
     
     for (var j=0; j<25; j++) {
@@ -443,58 +438,92 @@ function init(r) {
       gain[j].connect(masterGain);
       
       for (var i=0; i<2; i++) {
-        convolver[j][i] = ac.createConvolver();
+        osc[j][i] = ac.createOscillator();
+        osc[j][i].frequency.value = baseFreq*tuning[j];
         gains[j][i] = ac.createGain();
         gains[j][i].gain.value = 0.0;
       
-        source.connect(convolver[j][i]);
-        convolver[j][i].connect(gains[j][i]);
+        osc[j][i].connect(gains[j][i]);
         gains[j][i].connect(gain[j]);
+        osc[j][i].start();
       }
-      
-      reverb(baseFreq*tuning[j], 1.0, 16, 16, 0, j);
     }
-    source.start();
   }
+}
+
+function switchNote(n) {
+  var imgData = ctx.getImageData(0, 0, chart.width, chart.height);
+  for (var y = 0; y < chart.height; y++) {
+    for (var x = 0; x < chart.width; x++) {
+      var i = (y*chart.width+x)*4;
+      
+      imgData.data[i] = 0;
+      imgData.data[i+1] = 0;
+      imgData.data[i+2] = 0;
+      imgData.data[i+3] = Math.abs(out(x, y+n*chart.height, baseFreq*12, 1.0, 16, 16)) * 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
 }
 
 function highlight() {
   hl.value = txt.value.replace(/(\w+\.|[^\s\w]+)/g, function(x){ return x.replace(/./gi, " "); });
 }
 
-function parse(fn) {
-  out = new Function('i', 'f', 'v', 'rx', 'ry', 'return '+fn+';');
-  ctx.fillRect(0, 0, chart.width, chart.height);
-  ctx.beginPath();
-  
-  var i = -1;
-  var j = 8;
-  ctx.moveTo(i, j);
-  
-  for (i = 0; i < sampleRate.value; i++) {
-    res = out(i, baseFreq*12, 1.0, 16, 16);
-    j = 16-res*8-8;
-    ctx.lineTo(i, j);
-    ctx.moveTo(i, j);
-  }
-  ctx.stroke();
+function newEq() {
+  out = new Function('x', 'y', 'f', 'v', 'rx', 'ry', 'return '+txt.value+';');
 }
 
-function reverb(f, v, rx, ry, n, id) {
-  for (var i = 0; i < noiseBuffer.length; i++) {
-    res = out(i, f, v, rx, ry);
-    left[i] = res;
-    right[i] = res;
+function parse() {
+  var imgData = ctx.getImageData(0, 0, chart.width, chart.height);
+  for (var y = 0; y < chart.height; y++) {
+    harmonics[w][y] = new Array(2048);
+    harmonics[w][y].fill(0.0);
+    
+    for (var x = 0; x < chart.width; x++) {
+      harmonics[w][y][x] = out(x, y+note_n*chart.height, baseFreq*12, 1.0, 16, 16);
+      var i = (y*chart.width+x)*4;
+      
+      imgData.data[i] = 0;
+      imgData.data[i+1] = 0;
+      imgData.data[i+2] = 0;
+      imgData.data[i+3] = Math.abs(harmonics[w][y][x]) * 255;
+    }
   }
-  convolver[id][n].buffer = noiseBuffer;
-  gains[id][n].gain.linearRampToValueAtTime(1.0, ac.currentTime + 0.03125);
-  gains[id][1-n].gain.linearRampToValueAtTime(0.0, ac.currentTime + 0.03125);
+  ctx.putImageData(imgData, 0, 0);
+  frame = 0;
+}
+
+function crossfade(f, v, rx, ry, n, id) {
+  real[0] = 0;
+  imag[0] = 0;
+  for (var j=1; j<2048; j++) {
+    real[j] = harmonics[w][frame][j-1];
+    imag[j] = 0.0;
+  }
+  wave = ac.createPeriodicWave(real, imag, {disableNormalization: false}); //The default is false
+  osc[id][n].setPeriodicWave(wave);
+  gains[id][n].gain.linearRampToValueAtTime(1.0, ac.currentTime + 0.016);
+  gains[id][1-n].gain.linearRampToValueAtTime(0.0, ac.currentTime + 0.016);
+  frame++;
+  if (frame == harmonics[w].length) { frame = 0; }
 }
 
 function playNote(key, p, v, rx, ry) {
   if (gain[key]) {
     kd[key] = true;
     pitchShift(key, p, v, rx, ry);
+    
+    iv[key] = setInterval(function (p) {
+      if (gains[key][0].gain.value == 0.0) {
+        crossfade(p * tuning[key], v, rx, ry, 0, key);
+      } else if (gains[key][1].gain.value == 0.0) {
+        crossfade(p * tuning[key], v, rx, ry, 1, key);
+      }
+    }, 16);
+    w = 1-w;
+    note_n++;
+    parse();
   }
 }
 
@@ -502,6 +531,7 @@ function stopNote(key) {
   if (gain[key]) {
     kd[key] = false;
     gain[key].gain.linearRampToValueAtTime(0.0, ac.currentTime + 0.001);
+    clearInterval(iv[key]);
   }
 }
 
@@ -512,13 +542,9 @@ function pitchShift(key, f, v, rx, ry) {
     } else {
       f = baseFreq*Math.pow(2,f/64/12) * 12;
     }
+    osc[key][0].frequency.value = f * tuning[key];
+    osc[key][1].frequency.value = f * tuning[key];
     v = volume(key, v);
-    
-    if (gains[key][0].gain.value == 0.0) {
-      reverb(f * tuning[key], v, rx, ry, 0, key);
-    } else if (gains[key][1].gain.value == 0.0) {
-      reverb(f * tuning[key], v, rx, ry, 1, key);
-    }
     
     f_.innerText = parseInt(f * tuning[key]);
     v_.innerText = v.toFixed(2);
@@ -588,6 +614,7 @@ function record() {
     recording = true;
     document.getElementById("rec").innerText = "stop";
   } else {
+    mediaRecorder.requestData();
     mediaRecorder.stop();
     recording = false;
     document.getElementById("rec").innerText = "fiber_manual_record";
@@ -709,14 +736,17 @@ function showPopup() {
   }
 }
 
-function showTab() {
-  if (tab.style.display != 'block') {
-    tab.style.display = 'block';
-    document.getElementById("tabs").innerText = "music_off";
-  } else {
-    tab.style.display = 'none';
-    document.getElementById("tabs").innerText = "music_note";
+function addMarkers() {
+  var offset = 28;
+  for (var j=0; j<2; j++) {
+    if (j == 1) { offset = 796; }
+    for (var i=0; i<12; i++) {
+      var m = i+3;
+      if (m >= 12) { m -= 12; }
+      markers.innerHTML += "<span class='"+letters[m]+"' style='left:"+(offset+64*i)+"px;'>" + letters[m].replace("_", "#") + "</span>";
+    }
   }
+  markers.innerHTML += "<span class='"+letters[3]+"' style='left:1564px;'>" + letters[3].replace("_", "#") + "</span><span style='left:1600px;'>`</span>";
 }
 
 
