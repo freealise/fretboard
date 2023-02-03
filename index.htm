@@ -297,7 +297,7 @@ audio {
     <ul><li class="n">f:</li><li id="f_">_</li><li class="n">v:</li><li id="v_">_</li><li class="n">rx:</li><li id="rx_">_</li><li class="n">ry:</li><li id="ry_">_</li></ul>
     <textarea id="hl"></textarea>
     <textarea id="txt" onkeyup="highlight();hl.scrollTo(0,this.scrollTop);" onchange="newEq();parse();note_n=0;switch_n.focus();" onscroll="hl.scrollTo(0,this.scrollTop);">Math.sin(y)/(x+1)</textarea>
-    <div><canvas id="chart" width="256" height="64" onclick="switch_n.focus();"></canvas><input type="number" id="switch_n" max="0" min="-19200" onchange="switchNote(this.value);"></div>
+    <div><input type="number" id="switch_n" max="0" min="-19200" onchange="switchNote(this.value);"><canvas id="chart" width="2048" height="64" onclick="switch_n.focus();"></canvas></div>
   </div>
   <script type="text/javascript" src="midi.js"></script>
   <script type="text/javascript" src="frequency-visualizer.js"></script>
@@ -478,7 +478,6 @@ function parse() {
   var imgData = ctx.getImageData(0, 0, chart.width, chart.height);
   for (var y = 0; y < chart.height; y++) {
     harmonics[w][y] = new Array(2048);
-    harmonics[w][y].fill(0.0);
     
     for (var x = 0; x < chart.width; x++) {
       harmonics[w][y][x] = out(x, y+note_n*chart.height, baseFreq*12, 1.0, 16, 16);
