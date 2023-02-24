@@ -12,7 +12,7 @@ https://en.wikipedia.org/wiki/Major_thirds_tuning
 https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
-convolver (recorded)  
+convolver (drawn waveform or recorded impulse response)  
 pull tabs and chords from Ultimate Guitar ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics  
 bamboo wood sources  
