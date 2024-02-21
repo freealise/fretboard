@@ -13,8 +13,8 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 convolver (drawn waveform or recorded impulse response)  
-pull tabs and chords from Ultimate Guitar ?  
-links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics  
+pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
+links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 bamboo wood sources  
 polyphonic apache fiddle ?  
 
