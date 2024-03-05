@@ -12,7 +12,8 @@ https://en.wikipedia.org/wiki/Major_thirds_tuning
 https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
-convolver (drawn waveform or recorded impulse response)  
+reverb (drawn waveform / recorded impulse response; from pano with convolver / delays ?)  
+3d automation paths for 5.1 sound in multitracker (svg with mouse velocity / wheel / pressure)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 bamboo wood sources  
