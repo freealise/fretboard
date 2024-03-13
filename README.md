@@ -13,7 +13,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 reverb (drawn waveform / recorded impulse response; from pano with convolver / delays ?)  
-3d automation paths for 5.1 sound in multitracker with phi/theta (mouse velocity / wheel / pressure / keyboard)  
+3d automation paths for 5.1 sound in sequencer with phi/theta by mouse velocity / wheel / pressure / keyboard (https://github.com/freealise/freealise/blob/main/pannernode.htm)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 bamboo wood sources  
