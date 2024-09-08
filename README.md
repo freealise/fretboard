@@ -12,7 +12,7 @@ https://en.wikipedia.org/wiki/Major_thirds_tuning
 https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
-reverb (drawn waveform / recorded impulse response; from csg model / pano with convolver / delays ?)  
+reverb (drawn waveform / recorded impulse response; from 3D model / pano with convolver / delays ?)  
 3d automation paths for 5.1 sound in sequencer with phi/theta by wind mouse velocity / wheel / touch / keyboard sent by midi to any compliant multitracker (https://github.com/freealise/freealise/blob/main/pannernode.htm)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
