@@ -13,13 +13,17 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 reverb (drawn waveform / recorded impulse response; from csg model / pano with convolver / delays ?)  
-3d automation paths for 5.1 sound in sequencer with phi/theta by mouse velocity / wheel / touch / keyboard sent by midi to any compliant multitracker (https://github.com/freealise/freealise/blob/main/pannernode.htm)  
+3d automation paths for 5.1 sound in sequencer with phi/theta by wind mouse velocity / wheel / touch / keyboard sent by midi to any compliant multitracker (https://github.com/freealise/freealise/blob/main/pannernode.htm)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 clothes pegs on tuners for indication  
 bamboo wood sources  
 polyphonic apache fiddle ?  
 
+### Alternative (wind)
+set of silicon tubes of same length (with a hole on one side) in a row, pressed by fingers and blown into by pedals through hoses from both sides (?)  
+volume control with same or other hand and size of output hole (or electrically) ?  
+  
 ## Emulator
 Synthesizer optimized for multitouch screen, lets you play the virtual fretboard like tapping the strings of a guitar.
 Written in Javascript using Web Audio API, works in modern browsers.
