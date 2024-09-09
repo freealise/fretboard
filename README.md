@@ -21,7 +21,7 @@ bamboo wood sources
 polyphonic apache fiddle ?  
 
 ### Alternative (wind)
-set of silicon tubes of same length (with a hole on one side) in a row, pressed by fingers and blown into by pedals through hoses from both sides (?)  
+set of silicon tubes (drinking straw for prototype) of same length (with a hole on one side) in a row, pressed by fingers and blown into by pedals through hoses from both sides (?)  
 volume control with same or other hand and size of output hole (or electrically) ?  
   
 ## Emulator
