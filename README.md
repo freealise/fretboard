@@ -20,9 +20,13 @@ clothes pegs on tuners for indication
 bamboo wood sources  
 polyphonic apache fiddle ?  
 
-### Alternative (wind)
+### Alternatives:
+#### wind
 set of silicon tubes (drinking straw for prototype) of same length (with a hole on one side) in a row, pressed by fingers and blown into by pedals through hoses from both sides (?)  
 volume control with same or other hand and size of output hole (or electrically) ?  
+  
+#### reed
+hard tinfoil surface cut diagonally and into narrow reeds, held against an elastic damper stripe attached with wire to a row of angle keys like hairpins  
   
 ## Emulator
 Synthesizer optimized for multitouch screen, lets you play the virtual fretboard like tapping the strings of a guitar.
