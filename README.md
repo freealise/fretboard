@@ -16,9 +16,12 @@ reverb (drawn waveform / recorded impulse response; from 3D model / pano with co
 3d automation paths for 5.1 sound in sequencer with phi/theta by wind mouse velocity / wheel / touch / keyboard sent by midi to any compliant multitracker (https://github.com/freealise/freealise/blob/main/pannernode.htm)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
-clothes pegs on tuners for indication  
+clothes pegs on pin tuners for indication  
 bamboo wood sources  
 polyphonic apache fiddle ?  
+
+### Variant:
+ends of strings go through a tube at the bottom like cello end pin, with pedals for each string (aligned to both sides of feet and knees)  
 
 ### Alternatives:
 #### wind
