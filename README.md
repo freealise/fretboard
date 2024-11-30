@@ -21,7 +21,8 @@ bamboo wood sources
 polyphonic apache fiddle ?  
 
 ### Variant:
-ends of strings go through a tube at the bottom like cello end pin, with pedals for each string (aligned to both sides of feet and knees)  
+ends of strings go through a tube at the bottom like cello end pin, with pitch pedals for each string (aligned to both sides of feet and knees)  
+or attach each string on a spring with lever (~floyd rose); string volume (distance from pickup) - bends do not change pitch on uneven fretboard  
 
 ### Alternatives:
 #### wind
