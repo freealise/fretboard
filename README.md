@@ -19,6 +19,7 @@ links to ebooks (https://developers.google.com/books/docs/viewer/examples) and f
 clothes pegs on pin tuners for indication  
 bamboo wood sources  
 polyphonic apache fiddle ?  
+pickup / sustainer (https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?)  
 
 ### Variant:
 ends of strings go through a tube at the bottom like cello end pin, with pitch pedals for each string (aligned to both sides of feet and knees)  
