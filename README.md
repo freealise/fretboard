@@ -43,5 +43,6 @@ touch radius x/y -> filter quality or amplitude modulation
   
 audio to MIDI converter: poly pitch detect by comb filtering (in webaudio add the same signal delayed by varying time starting from longest and find greatest output volumes excluding harmonics of already existing unless louder than base pitch)  
 or in spectrum analyser find lowest pitch above threshold then exclude its harmonics unless louder than itself then continue up the scale  
+display piano roll with smooth pitch transitions on google function chart  
   
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
