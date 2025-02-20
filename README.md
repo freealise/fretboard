@@ -41,7 +41,7 @@ Written in Javascript using Web Audio API, works in modern browsers.
 MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html  
 touch radius x/y -> filter quality or amplitude modulation  
   
-audio to MIDI converter: poly pitch detect by comb filtering (in webaudio add the same signal delayed by varying time starting from longest and find greatest output volumes excluding harmonics of already existing unless louder than base pitch)  
+audio to midi / tab / notes transcription: poly pitch detect by comb filtering (in webaudio add the same signal delayed by varying time starting from longest and find greatest output volumes excluding harmonics of already existing unless louder than base pitch)  
 or in spectrum analyser find lowest pitch above threshold then exclude its harmonics unless louder than itself then continue up the scale  
 display piano roll with smooth pitch transitions on google function chart  
   
