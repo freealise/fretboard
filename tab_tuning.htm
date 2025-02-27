@@ -221,6 +221,7 @@ for (var i=0; i<barre.length; i++) {
   notation.innerHTML += "<a title='"+barre[i]+"' href='javascript:' onclick='addNote(this.title);' style='color:rgba(255,255,255,0.5);'>"+barre[i]+"</a> ";
 }
 
+// replace numbers with vowels (regular / capital / superscript / subscript)
 var num = ("𝟶 𝟷 𝟸 𝟹 𝟺 𝟻 𝟼 𝟽 𝟾 𝟿 𝟷𝟶 𝟷𝟷 𝟷𝟸 𝟷𝟹 𝟷𝟺 𝟷𝟻 𝟷𝟼 𝟷𝟽 𝟷𝟾 𝟷𝟿 𝟸𝟶 𝟸𝟷 𝟸𝟸 𝟸𝟹 𝟸𝟺").split(" ");
 
 var letters = ('a a_ b c c_ d d_ e f f_ g g_').split(' ');
