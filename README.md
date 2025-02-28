@@ -37,6 +37,7 @@ Synthesizer optimized for multitouch screen, lets you play the virtual fretboard
 Written in Javascript using Web Audio API, works in modern browsers.
 
 ### TODO:
+replace numbers in tab retuner with vowels (regular / capital / superscript / subscript) or dot patterns with left column for position and right for fret (5x5 from 0)  
 MIDI in/out to and from DAWs (16 channels for microtonality; read/write file ?) - midi_out.html  
 touch radius x/y -> filter quality or amplitude modulation  
   
