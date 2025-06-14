@@ -33,6 +33,10 @@ volume control with same or other hand and size of output hole (or electrically)
 #### reed
 hard tinfoil surface cut diagonally and into narrow reeds, held against an elastic damper stripe attached with wire to a row of angle keys like hairpins  
   
+#### ocarina
+four-chambered and tuned to major thirds (two or three holes per chamber, one hole per finger)  
+silicone resonator to allow formants, can be a concertina  
+  
 #### midi
 attach long flat pieces of plastic or bamboo to neighboring keys diagonally and detune by ratio of aftertouch pressures  
 
