@@ -33,6 +33,9 @@ volume control with same or other hand and size of output hole (or electrically)
 #### reed
 hard tinfoil surface cut diagonally and into narrow reeds, held against an elastic damper stripe attached with wire to a row of angle keys like hairpins  
   
+#### midi
+attach long flat pieces of plastic or bamboo to neighboring keys diagonally and detune by ratio of aftertouch pressures  
+
 ## Emulator
 Synthesizer optimized for multitouch screen, lets you play the virtual fretboard like tapping the strings of a guitar.
 Written in Javascript using Web Audio API, works in modern browsers.
