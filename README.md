@@ -18,6 +18,7 @@ links to ebooks (https://developers.google.com/books/docs/viewer/examples) and f
 clothes pegs on pin tuners for indication  
 bamboo wood sources  
 polyphonic apache fiddle ?  
+folding resonator ?  
 pickup / sustainer (https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?)  
 violin bow hair on surface of curved stripe of tinfoil or bamboo attached with hairpins and stretched to loop in the shape of bow -> universal bow for guitar and violin  
 
