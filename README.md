@@ -36,7 +36,7 @@ volume control with same or other hand and size of output hole (or electrically)
 hard tinfoil surface cut diagonally and into narrow reeds, held against an elastic damper stripe attached with wire to a row of angle keys like hairpins  
   
 #### ocarina
-four-chambered and tuned to major thirds (two or three holes or one long hole per chamber, one hole per finger or several fingers closing one hole gradually)  
+four-chambered and tuned to major thirds (two or three holes or one long hole per chamber, one hole per finger or several fingers closing one hole | holes partially | gradually)  
 silicone resonator to allow formants, can be a concertina  
   
 #### midi
