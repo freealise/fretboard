@@ -56,4 +56,6 @@ or in spectrum analyser find lowest pitch above threshold then exclude its harmo
 (https://gist.github.com/natowi/d26c7e97443ec97e8032fb7e7596f0b0)  
 display piano roll with smooth pitch transitions on google function chart (https://developers.google.com/chart/interactive/docs/gallery/intervals#area-intervals)  
   
-Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)
+Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)  
+https://en.wikipedia.org/wiki/Czech_bluegrass  
+  
