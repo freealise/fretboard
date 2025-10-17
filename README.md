@@ -29,7 +29,7 @@ violin bow hair on surface of curved stripe of tinfoil or bamboo attached with h
 ends of strings go through a tube at the bottom like cello end pin, with pitch pedals for each string (aligned to both sides of feet and knees)  
 or attach each string on a spring with lever (~floyd rose); string volume (distance from pickup) - bends do not change pitch on uneven fretboard  
 
-### Alternatives:
+### 🪗🎻🪘🪕🎍 Alternatives:
 #### wind
 set of silicon tubes (drinking straw for prototype) of same length (with a hole on one side) in a row, pressed by fingers and blown into by pedals through hoses from both sides (?)  
 volume control with same or other hand and size of output hole (or electrically) ?  
