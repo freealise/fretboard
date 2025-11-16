@@ -20,6 +20,7 @@ links to ebooks (https://developers.google.com/books/docs/viewer/examples) and f
 clothes pegs on pin tuners for indication  
 bamboo wood sources  
 polyphonic apache fiddle ?  
+talking drum ?  
 folding resonator ?  
 microtonal frets from chinese mat    
 pickup / sustainer (https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?)  
