@@ -24,7 +24,9 @@ polyphonic talking drum with diagonal net
 folding resonator ?  
 microtonal frets from chinese mat    
 pickup / sustainer (https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?)  
-violin bow hair on surface of curved stripe of tinfoil or bamboo attached with hairpins and stretched to loop in the shape of bow -> universal bow for guitar and violin  
+wind all strings with thread or thin wire and bow with pick along the string  
+wind a curved hairpin with thread or string and use as guitar bow  
+violin bow hair or wound string along surface of curved stripe of tinfoil or bamboo attached with hairpins and stretched to loop in the shape of bow -> universal bow for guitar and violin  
 
 ### Variant:
 ends of strings go through a tube at the bottom like cello end pin, with pitch pedals for each string (aligned to both sides of feet and knees)  
