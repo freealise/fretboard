@@ -28,7 +28,8 @@ pickup / sustainer (https://www.instructables.com/Infinite-Guitar-Sustainer/, or
 wind all strings with thread or thin wire and bow with pick along the string  
 wind a curved hairpin with thread or string and use as guitar bow  
 violin bow hair or wound string along surface of curved stripe of tinfoil or bamboo attached with hairpins and stretched to loop in the shape of bow -> universal bow for guitar and violin  
-
+waveforms embossed on postcards played back with nail  
+  
 ### Variant:
 ends of strings go through a tube at the bottom like cello end pin, with pitch pedals for each string (aligned to both sides of feet and knees)  
 or attach each string on a spring with lever (~floyd rose); string volume (distance from pickup) - bends do not change pitch on uneven fretboard  
