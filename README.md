@@ -15,6 +15,8 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 sell do-it-yourself (DIY) kits or provide online instructions with parts  
 make it the size of ukulele  
   
+math equation input keyboard for _spectrum_ not waveform  
+  
 reverb (drawn waveform / recorded impulse response; from 3D model / pano with convolver / delays or AI ? https://www.google.com/search?q=3d+mesh+to+impulse+response)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
