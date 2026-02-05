@@ -13,6 +13,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 sell do-it-yourself (DIY) kits or provide online instructions with parts  
+https://www.falstad.com/circuit/, tinkercad  
 make it the size of ukulele  
   
 math equation input keyboard for _spectrum_ not waveform  
