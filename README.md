@@ -27,7 +27,7 @@ polyphonic apache fiddle ?
 polyphonic talking drum with diagonal net  
 folding resonator ?  
 microtonal frets from chinese mat    
-pickup / sustainer with volume controlled by foot (analog dimmer, https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?), or touch area of flat wires one over the other below the string, or finger bends on fretboard surface with cavities for each string (pickup too far away so the change will be inaudible ?)  
+pickup / sustainer with volume controlled by foot (analog dimmer, https://www.instructables.com/Infinite-Guitar-Sustainer/, or order thin pickups from the US ?), or touch area of flat wires one over the other below the string, or finger bends on fretboard surface with cavities for each string (bring the pickup closer to the fretboard for that)  
 wind all strings with thread or thin wire and bow with pick along the string  
 wind a curved hairpin with thread or string and use as guitar bow  
 violin bow hair or wound string along surface of curved stripe of tinfoil or bamboo attached with hairpins and stretched to loop in the shape of bow -> universal bow for guitar and violin  
