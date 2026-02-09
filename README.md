@@ -16,7 +16,7 @@ sell do-it-yourself (DIY) kits or provide online instructions with parts
 https://www.falstad.com/circuit/, tinkercad  
 make it the size of ukulele  
   
-math equation input keyboard for _spectrum_ not waveform  
+fm instead of math input ?  
   
 reverb (drawn waveform / recorded impulse response; from 3D model / pano with convolver / delays or AI ? https://www.google.com/search?q=3d+mesh+to+impulse+response)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
