@@ -1,1 +1,0 @@
-change pitch in realtime with delay time varying by sawtooth wave (Doppler effect) and possibly two delay lines crossfading
