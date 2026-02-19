@@ -16,7 +16,7 @@ sell do-it-yourself (DIY) kits or provide online instructions with parts
 https://www.falstad.com/circuit/, tinkercad  
 make it the size of ukulele  
   
-waveform change with x/y velocity or radius touch instead of math  
+waveform change with impulse response by x or radius touch instead of math  
   
 reverb (drawn waveform / recorded impulse response; from 3D model / pano with convolver / delays or AI ? https://www.google.com/search?q=3d+mesh+to+impulse+response)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
