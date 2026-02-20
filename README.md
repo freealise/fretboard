@@ -17,6 +17,7 @@ https://www.falstad.com/circuit/, tinkercad
 make it the size of ukulele  
   
 waveform change with impulse response by x or radius touch instead of math  
+initially noise comb filtered with same convolver, effect is on next note  
   
 reverb (drawn waveform / recorded impulse response; from 3D model / pano with convolver / delays or AI ? https://www.google.com/search?q=3d+mesh+to+impulse+response)  
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
