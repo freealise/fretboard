@@ -15,6 +15,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 sell do-it-yourself (DIY) kits or provide online instructions with parts  
 https://www.falstad.com/circuit/, tinkercad  
 make it the size of ukulele  
+double sided for bass  
   
 waveform change with impulse response by x or radius touch instead of math  
 initially noise comb filtered with same convolver, effect is on next note  
