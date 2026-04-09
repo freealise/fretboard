@@ -76,3 +76,6 @@ https://en.wikipedia.org/wiki/Czech_bluegrass
 - paint / upload set of gradient images and interpolate in given timeframe instead of equation  
 - svg sequencer (google charts) on log scale with stroke-dasharray, gradient = volume, color = frequency, saturation = phase ?  
   
+- electric kalimba (mat from thick metal wire, magnetic or air noise, mute)  
+- violin bow formants - 1:along string, 2:fabric on side of bow (speed), 3:pressure  
+  
