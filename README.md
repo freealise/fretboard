@@ -72,3 +72,7 @@ display piano roll with smooth pitch transitions on google function chart (https
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)  
 https://en.wikipedia.org/wiki/Czech_bluegrass  
   
+- crossfade higher harmonics for noise  
+- paint / upload set of gradient images and interpolate in given timeframe instead of equation  
+- svg sequencer (google charts) on log scale with stroke-dasharray, gradient = volume, color = frequency, saturation = phase ?  
+  
