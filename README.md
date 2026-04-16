@@ -25,7 +25,7 @@ reverb (drawn waveform / recorded impulse response; from 3D model / pano with co
 pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 clothes pegs on pin tuners for indication  
-bamboo wood sources  
+bamboo greenhouses  
 polyphonic apache fiddle ?  
 polyphonic talking drum with diagonal net  
 folding resonator ?  
