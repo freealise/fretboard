@@ -69,6 +69,7 @@ audio to midi / tab / notes transcription: poly pitch detect by comb filtering (
 or in spectrum analyser find lowest pitch above threshold then exclude its harmonics unless louder than itself then continue up the scale  
 (https://gist.github.com/natowi/d26c7e97443ec97e8032fb7e7596f0b0)  
 display piano roll with smooth pitch transitions on google function chart (https://developers.google.com/chart/interactive/docs/gallery/intervals#area-intervals)  
+separate parts for transcribing by subtracting channels (with panning slider) and FFT contrast, piano scale in the left  
   
 Android / iOS app, promote with Wizdom Music ? (https://www.wizdommusic.com/)  
 https://en.wikipedia.org/wiki/Czech_bluegrass  
