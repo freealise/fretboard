@@ -2,6 +2,9 @@
 Portable and versatile microtonal stick guitar to be laser cut (and other DIY musical instruments) for soundtracks, meditation and public hypnosis.  
   
   
+harmonic equalizer with noise input (xor generator?) & vocoder / convolver  
+(frequency / impulse response)  
+  
 - threshold (values below are multiplied by ratio of 1 to threshold level and squared then divided back), volume tracking (as final multiplier) and up/down option for **compressor** (to remove finger noise and keep the dynamics of notes), expander; **parametric eq** out of boost (3 parameters + filter switch; test LP filter for **bitcrusher**, **pitch shifter** -> chorus|tremolo|vibrato  
 - reverb (echo) can be algorithmic with scattered comb delays and allpasses for phase decorellation (or impulse response and FFT)  
 - formant filter for backing vocals with XYZ control by touchscreen or manual trackball (phaser)  
