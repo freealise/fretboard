@@ -1,0 +1,123 @@
+/* old pitch+boost+chorus design
+
+        float amp = lfo_step(&disco.lfo, lfo_sinewave) * 0.0; //mouse y instead
+        float p = lfo_step(&disco.lfo, lfo_sinewave) * 128; //mouse x instead
+        float r = (lfo_step(&disco.lfo, lfo_sinewave) + 1) / 2.0; //wheel instead
+
+        float step = pitch.step;
+        float delay = 2*DISCONT_STEPS*step;
+
+        sample_array_write(in, &pitch.idx, pitch.array);
+
+        float d = sample_array_read(delay - p*step) * (1.0 + amp);
+        d = in*r + d*(1.0-r);
+
+        return d;
+*/
+
+_
+
+
+//
+// Old sustainer
+//
+
+struct {
+    float sum;
+    float vol;
+} sus;
+
+static inline void sus_describe(float pot[4])
+{
+	fprintf(stderr, " delay=%g ms", pot[0] * 1000);
+	fprintf(stderr, " lfo=%g ms", pot[2]*4);
+	fprintf(stderr, " feedback=%g\n", pot[3]);
+}
+
+static inline void sus_init(float pot[4])
+{
+	effect_set_delay(pot[0] * 1000);	// delay = 0 .. 1s
+	effect_set_lfo_ms(pot[2]*4);	// LFO = 0 .. 4ms
+	effect_set_feedback(pot[3]);	// feedback = 0 .. 100%
+}
+
+static inline float sus_step(float in)
+{
+        float out = 0.0f;
+        sample_array_write(in);
+        sus.sum += fabsf(in);
+        sus.sum -= fabsf(sample_array_get(512));
+
+        float d = 0.5f;
+        float c = 2.0f;
+        float l = 32;
+
+        sus.vol = sus.sum / 512;
+        out = (in * (1.0 - d) + (in * sus.vol * c + in / sus.vol / c) * d / 2) / 2;
+
+        if (sus.vol >= 1.0 / l) {
+          return out;
+        } else {
+          return out * (sus.vol * l);
+        }
+}
+
+_
+
+
+//
+// Bitcrusher
+//
+
+struct {
+        float count;
+        float last;
+        float sum;
+        float sum2;
+} bit;
+
+static inline void bit_describe(float pot[4])
+{
+	fprintf(stderr, " delay=%g ms", pot[0] * 12 + 4);
+	fprintf(stderr, " lfo=%g ms", pot[1] * 40000 + 8000);
+	fprintf(stderr, " feedback=%g\n", pot[3]);
+}
+
+static inline void bit_init(float pot[4])
+{
+	effect_set_delay(pot[0] * 12 + 4);	// bitrate = 4 .. 16bit
+	effect_set_lfo_ms(pot[1] * 40000 + 8000); // sample rate = 8000 .. 48000Hz
+    effect_set_feedback(pot[3]); // odd power function = 1 .. 15
+}
+
+static inline float bit_step(float in)
+{
+        float br = 4;
+        float sr = 4000;
+
+        int b = (int) powf(2, br); // bitrate from mouse Y instead of br
+        int s = (int) 48000 / sr; // sample rate from mouse X instead of sr
+        float p = (float) 3.0;
+	    float out;
+
+        if (bit.count == 0) {
+          out = roundf(powf(bit.sum/s, 1.0/p) * b) / b;
+          bit.last = out;
+          bit.sum = 0.0;
+        } else {
+          out = bit.last;
+        }
+        out = powf(out, p);
+
+        sample_array_write(out);
+
+        bit.sum += in;
+        bit.sum2 += out;
+        bit.sum2 -= sample_array_get(s*2);
+        bit.count++;
+        if (bit.count == s) {
+          bit.count = 0.0f;
+        }
+
+	return bit.sum2 / (s*2);
+}
