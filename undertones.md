@@ -9,5 +9,4 @@ The tritare, a guitar with 'Y' shaped strings, cause subharmonics too. This can 
 Subharmonics can be produced by signal amplification through loudspeakers.[6]  
 
 https://en.wikipedia.org/wiki/Undertone_series
-
-(artificially by AM)
+https://www.marikimura.com/research/subharmonics  
