@@ -2,7 +2,7 @@
 Portable and versatile microtonal stick guitar to be laser cut (and other DIY musical instruments) for soundtracks, meditation and public hypnosis.  
   
   
-harmonic filter with noise input (xor generator?) / convolver / subharmonics  
+sub+harmonic filter with noise input (xor generator?) / convolver  
 (frequency / impulse response)  
   
 - threshold (values below are multiplied by ratio of 1 to threshold level and squared then divided back), volume tracking (as final multiplier) and up/down option for **compressor** (to remove finger noise and keep the dynamics of notes), expander; **parametric eq** out of boost (3 parameters + filter switch; test LP filter for **bitcrusher**, **pitch shifter** -> chorus|tremolo|vibrato  
