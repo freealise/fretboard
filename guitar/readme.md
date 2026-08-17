@@ -2,7 +2,7 @@
 Portable and versatile microtonal stick guitar to be laser cut (and other DIY musical instruments) for soundtracks, meditation and public hypnosis.  
   
   
-natural noise -> pitch shift & comb filter as delays / convolver (~vocoder)  
+natural noise (recorded or from audio input) -> pitch shift & comb filter as delays / convolver (~vocoder)  
 sub+harmonic filter with noise input (xor generator?) / convolver  
 (frequency / impulse response)  
   
