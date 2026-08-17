@@ -12,6 +12,8 @@ https://en.wikipedia.org/wiki/Major_thirds_tuning
 https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
+Ω shaped ring on index finger for another fret (or a claw for middle finger)  
+  
 sell do-it-yourself (DIY) kits or provide online instructions with parts  
 (https://www.falstad.com/circuit/, https://www.falstad.com/afilter/, https://www.falstad.com/dfilter/), tinkercad  
 make it the size of ukulele  
