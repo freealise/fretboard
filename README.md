@@ -24,7 +24,7 @@ initially noise comb filtered with same convolver, effect is on next note
 may change throughout the note by crossfading within the period of input  
   
 reverb (drawn waveform / record impulse responses of spaces when travelling; from 3D model / pano with convolver / delays or AI ? https://www.google.com/search?q=3d+mesh+to+impulse+response)  
-pull tabs and chords from Ultimate Guitar or elsewhere and average versions with AI ?  
+pull MIDI, tabs and chords from Ultimate Guitar or elsewhere (and average versions ?)  
 links to ebooks (https://developers.google.com/books/docs/viewer/examples) and folk song archives with lyrics and notation  
 clothes pegs on pin tuners for indication  
 bamboo greenhouses  
