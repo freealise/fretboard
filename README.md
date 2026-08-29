@@ -13,6 +13,7 @@ https://en.wikipedia.org/wiki/Chapman_Stick
 
 ### TODO:
 superslide: cut two pencils and join together to place over a fret, for any basic chord in major thirds  
+stapler clips as buttons for each string to avoid muting in microtonal mode  
   
 sell do-it-yourself (DIY) kits or provide online instructions with parts  
 (https://www.falstad.com/circuit/, https://www.falstad.com/afilter/, https://www.falstad.com/dfilter/), tinkercad  
